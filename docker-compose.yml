@@ -1,0 +1,44 @@
+services:
+
+  # ============================================
+  # BACKEND - Spring Boot (Java 21)
+  # ============================================
+  # Se conecta a db-battilana (MySQL existente en network-battilana)
+  backend:
+    build:
+      context: ./backend-onepage
+      dockerfile: Dockerfile
+    container_name: onepage-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:mysql://db-battilana:3306/onepage_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: "B4tt1l4n4$"
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      FEIGN_CLIENT_BASE_URL: http://sap-backend:8082
+    ports:
+      - "8085:8080"
+    networks:
+      - network-battilana
+
+  # ============================================
+  # FRONTEND - Angular + Nginx
+  # ============================================
+  frontend:
+    build:
+      context: ./frontend-onepage
+      dockerfile: Dockerfile
+    container_name: onepage-frontend
+    ports:
+      - "4201:80"
+    depends_on:
+      - backend
+    networks:
+      - network-battilana
+
+# ============================================
+# RED EXTERNA - Usa la red ya existente
+# ============================================
+networks:
+  network-battilana:
+    external: true
