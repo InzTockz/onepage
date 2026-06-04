@@ -1,0 +1,10 @@
+.custom-select::picker(select) {
+  appearance: base-select;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+::ng-deep .legend-label-text {
+  font-size: 14px;
+  width: 140px !important;
+}

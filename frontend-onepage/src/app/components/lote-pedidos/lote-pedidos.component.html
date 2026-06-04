@@ -1,0 +1,197 @@
+<!-- Header de página -->
+<div class="flex items-center justify-between mb-5">
+  <div>
+    <h2 class="text-base font-semibold text-slate-800">Envíos WhatsApp</h2>
+    <p class="text-xs text-slate-400 mt-0.5">
+      {{ lotePedidos.length }} pedidos para enviar · {{ fechaHoy }}
+    </p>
+  </div>
+  <button
+    (click)="generarEnvioPedidos()"
+    [disabled]="enCargaEnvio && lotePedidos.length != 0"
+    class="flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 active:bg-green-800 transition-colors shadow-sm"
+  >
+    @if (enCargaEnvio) {
+      <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+      </svg>
+      Enviando...
+    } @else {
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+      </svg>
+      Enviar
+    }
+  </button>
+</div>
+
+@if (lotePedidos.length === 0) {
+  <div class="flex flex-col items-center justify-center py-20 text-slate-400">
+    <svg
+      class="w-12 h-12 mb-3 text-slate-300"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+    >
+      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+    </svg>
+    <p class="text-sm font-medium">Sin envíos pendientes</p>
+    <p class="text-xs mt-1">No hay pedidos para enviar en este momento</p>
+  </div>
+}
+
+<!-- Grid de tarjetas -->
+@if (lotePedidos.length > 0) {
+  <div class="overflow-y-auto max-h-[580px] xl:max-h-[660px] pr-1">
+    <div #gridCards class="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 p-2">
+      @for (pd of lotePedidos; track $index) {
+        <div
+          #cardItem
+          class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col"
+        >
+          <!-- Card header -->
+          <div class="px-4 pt-4 pb-3 border-b border-slate-100">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0 flex-1">
+                <h3
+                  class="text-sm font-semibold text-slate-800 leading-snug truncate"
+                  [title]="pd.nombre"
+                >
+                  {{ pd.nombre }}
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5 font-mono">RUC: {{ pd.codCliente }}</p>
+              </div>
+              @if (pd.montoVencido > 0) {
+                <span
+                  class="shrink-0 flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold bg-red-50 text-red-600 rounded-full uppercase tracking-wide border border-red-200"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                  Vencido
+                </span>
+              } @else {
+                <span
+                  class="shrink-0 flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold bg-green-50 text-green-600 rounded-full uppercase tracking-wide border border-green-200"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                  Al día
+                </span>
+              }
+            </div>
+          </div>
+
+          <!-- Card body -->
+          <div class="px-4 py-3 flex-1">
+            <div class="grid grid-cols-2 gap-y-2 text-xs">
+              <!-- Pedido (destacado) -->
+              <span class="text-slate-400">Pedido</span>
+              <span class="text-right font-bold text-slate-800 tabular-nums text-sm">
+                {{ pd.montoTotal | number: '1.2-2' }}
+              </span>
+
+              <div class="col-span-2 border-b border-dashed border-slate-100 my-1"></div>
+
+              <!-- Crédito -->
+              <span class="text-slate-400">Límite de crédito</span>
+              <span class="text-right text-slate-700 tabular-nums font-medium">{{
+                pd.lineaCredito
+              }}</span>
+
+              <span class="text-slate-400">Cond. de pago</span>
+              <span class="text-right text-slate-700">{{ pd.condicionPago }}</span>
+
+              <span class="text-slate-400">Utilización L/C</span>
+              <span class="text-right text-slate-700 tabular-nums font-medium">
+                {{ pd.lineaCreditoUtilizada | number: '1.0-0' }}%
+              </span>
+
+              <div class="col-span-2 border-b border-dashed border-slate-100 my-1"></div>
+
+              <!-- Cobranza -->
+              <span class="text-slate-400">Ctas x Cobrar</span>
+              <span class="text-right text-slate-700 tabular-nums font-medium">
+                {{ pd.montoPorCobrar | number: '1.2-2' }}
+              </span>
+
+              <span class="text-slate-400">Saldo vencido</span>
+              <span
+                class="text-right tabular-nums font-semibold"
+                [ngClass]="pd.montoVencido > 0 ? 'text-red-500' : 'text-slate-600'"
+              >
+                {{ pd.montoVencido | number: '1.0-0' }}
+              </span>
+
+              <span class="text-slate-400">Mora</span>
+              <span
+                class="text-right tabular-nums font-medium"
+                [ngClass]="
+                  pd.mora > 30 ? 'text-red-500' : pd.mora > 0 ? 'text-amber-500' : 'text-slate-700'
+                "
+              >
+                {{ pd.mora | number: '1.0-0' }}%
+              </span>
+
+              <div class="col-span-2 border-b border-dashed border-slate-100 my-1"></div>
+
+              <!-- Facturas -->
+              <span class="text-slate-400">Fact. vencidas</span>
+              <span
+                class="text-right font-medium"
+                [ngClass]="pd.nroFacturasVencidas > 0 ? 'text-red-500' : 'text-slate-700'"
+              >
+                {{ pd.nroFacturasVencidas }}
+              </span>
+
+              <span class="text-slate-400">Fact. más vencida</span>
+              <span class="text-right text-slate-700 tabular-nums">
+                {{ (pd.fechaFacturaVencidaMasAntigua | date: 'dd/MM/yyyy') ?? '—' }}
+              </span>
+
+              <span class="text-slate-400">Último pago</span>
+              <span class="text-right text-slate-700 tabular-nums">
+                {{ (pd.fechaUltimaFacturaPagada | date: 'dd/MM/yyyy') ?? '—' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Card footer -->
+          <div class="px-4 py-2.5 border-t border-slate-100">
+            @if (pd.nroFacturasVencidas > 0) {
+              <div class="flex items-start gap-1.5">
+                <svg
+                  class="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"
+                  />
+                </svg>
+                <span class="text-xs text-red-600 leading-relaxed">
+                  <span class="font-semibold">Vencidas:</span>
+                  {{ pd.facturasVencidas == '0' ? '' : pd.facturasVencidas }}
+                </span>
+              </div>
+            } @else {
+              <div class="flex items-center gap-1.5">
+                <svg
+                  class="w-3.5 h-3.5 text-green-500"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+                <span class="text-xs text-green-600 font-medium">Sin deuda vencida</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}
