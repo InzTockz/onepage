@@ -3,8 +3,10 @@ package com.battilana.onepage.dto.borradores;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public record PedidoDiarioResponse (
+public record PedidoDiarioClientResponse(
         Integer docEntry,
+        Integer docTime,
+        LocalDateTime fechaCreacionPedido,
         String cardCode,
         String cardName,
         String pymntGroup, //CONDICION DE PAGO
@@ -13,9 +15,7 @@ public record PedidoDiarioResponse (
         LocalDateTime docDate, // ULTIMO PAGO RECIBIDO
         Long facturasVencidas, //NUMERO DE FACTURAS VENCIDAS
         BigDecimal montoVencido, //MONTO TOTAL VENCIDO
-        //Double cuentaTotal,
         BigDecimal montoPorVencer, //MONTO POR VENCER
         LocalDateTime fechaVencida //FECHA DEL DOCUMENTO MAS VENCIDO
-        //String comentario
 ){
 }

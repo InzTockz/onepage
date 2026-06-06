@@ -1,7 +1,7 @@
 package com.battilana.onepage.service.impl;
 
 import com.battilana.onepage.dto.borradores.LotePedidosResponse;
-import com.battilana.onepage.dto.borradores.PedidoDiarioResponse;
+import com.battilana.onepage.dto.borradores.PedidoDiarioClientResponse;
 import com.battilana.onepage.dto.facturas.FacturasPorCobrarClientResponse;
 import com.battilana.onepage.entity.LotePedidosEntity;
 import com.battilana.onepage.mappers.LotePedidoMapper;
@@ -14,14 +14,11 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,11 +32,11 @@ public class LotePedidoServiceImpl implements LotePedidoService {
 
     @Override
     public void registrar() {
-        List<PedidoDiarioResponse> pedidoDiarioResponses = this.borradoresService.buscarPedidosDiarios();
+        List<PedidoDiarioClientResponse> pedidoDiarioClientResponse = this.borradoresService.buscarPedidosDiarios();
         List<LotePedidosEntity> lotePedidoEntities = new ArrayList<>();
 
-        if (pedidoDiarioResponses != null) {
-            for (PedidoDiarioResponse pd : pedidoDiarioResponses) {
+        if (pedidoDiarioClientResponse != null) {
+            for (PedidoDiarioClientResponse pd : pedidoDiarioClientResponse) {
                 List<FacturasPorCobrarClientResponse> listadoFacturas = this.facturaClienteClientService.buscarFacturasPorCobrarPorCliente(pd.cardCode());
                 LotePedidosEntity lp = new LotePedidosEntity();
                 lp.setCodCliente(pd.cardCode());

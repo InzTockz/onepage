@@ -1,6 +1,6 @@
 package com.battilana.onepage.controller;
 
-import com.battilana.onepage.dto.borradores.PedidoDiarioResponse;
+import com.battilana.onepage.dto.borradores.PedidoDiarioClientResponse;
 import com.battilana.onepage.service.BorradoresService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,7 @@ public class BorradoresController {
     private final BorradoresService borradoresService;
 
     @GetMapping("/pedido-diario")
-    public ResponseEntity<List<PedidoDiarioResponse>> buscarPedidoDiario(){
+    public ResponseEntity<List<PedidoDiarioClientResponse>> buscarPedidoDiario(){
         return ResponseEntity.status(HttpStatus.OK).body(this.borradoresService.buscarPedidosDiarios());
     }
 }
