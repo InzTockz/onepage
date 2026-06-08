@@ -5,13 +5,11 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "")
+@Table(name = "tbl_borradores")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -38,8 +36,10 @@ public class BorradoresEntity {
     private LocalDateTime fechaCreacionPedido; //LA FECHA EN LA QUE FUE CREADA EL PEDIDO
     private LocalDateTime fechaRegistro; //Fecha en la que se realizan los registros
     private LocalDateTime fechaLoteGenerado; //fecha que indica cuando se genero el lote - inicialmente se registrara como nulo
+    private LocalDateTime fechaLoteEnviado; //fecha en la que se envio el pedido por medio de whatsapp
     @Enumerated(EnumType.STRING)
     private EstadoBorrador estadoBorrador;
+    private String facturasVencidas; // SE LISTA EN CADENA LAS FACTURAS QUE ESTAN VENCIDAS
     private Integer docTime; //LA HORA EN LA QUE FUE CREADO EL PEDIDO
     private String comentario;
 }

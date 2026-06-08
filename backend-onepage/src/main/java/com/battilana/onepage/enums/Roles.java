@@ -1,4 +1,4 @@
-package com.battilana.onepage.entity;
+package com.battilana.onepage.enums;
 
 public enum Roles {
     ADMINISTRADOR, USUARIO

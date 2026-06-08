@@ -1,13 +1,11 @@
 package com.battilana.onepage.dto.borradores;
 
 import com.battilana.onepage.enums.EstadoBorrador;
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public record PedidodiarioResponse(
+public record PedidoDiarioResponse(
         Integer idLotePedidos,
         Integer docEntry, //NRO UNICO DE PEDIDO GESTIONADO
         String codCliente,
@@ -28,7 +26,8 @@ public record PedidodiarioResponse(
         LocalDateTime fechaRegistro,
         LocalDateTime fechaLoteGenerado,
         EstadoBorrador estadoBorrador,
-        Integer docTime,
+        String facturasVencidas,
+        Short docTime,
         String comentario
 ) {
 }

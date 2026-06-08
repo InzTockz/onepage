@@ -72,7 +72,6 @@ public class LotePedidoServiceImpl implements LotePedidoService {
                             LocalDate vencimiento = LocalDate.parse(f.vencimiento());
                             return vencimiento.isBefore(hoy);
                         }).map(FacturasPorCobrarClientResponse::comprobante).collect(Collectors.joining(" | "));
-
                 lp.setFacturasVencidas(facturas.isEmpty() ? "0": facturas);
                 lotePedidoEntities.add(lp);
             }

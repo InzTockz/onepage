@@ -1,13 +1,16 @@
 package com.battilana.onepage.service.impl;
 
 import com.battilana.onepage.client.BorradoresClient;
+import com.battilana.onepage.dto.borradores.ComentarioPedidoRequest;
 import com.battilana.onepage.dto.borradores.PedidoDiarioClientResponse;
-import com.battilana.onepage.dto.borradores.PedidodiarioResponse;
+import com.battilana.onepage.dto.borradores.PedidoDiarioResponse;
+import com.battilana.onepage.dto.facturas.FacturasPorCobrarClientResponse;
 import com.battilana.onepage.entity.BorradoresEntity;
 import com.battilana.onepage.enums.EstadoBorrador;
 import com.battilana.onepage.mappers.BorradoresMapper;
 import com.battilana.onepage.repository.BorradoresRepository;
 import com.battilana.onepage.service.BorradoresService;
+import com.battilana.onepage.service.FacturaClienteClientService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,7 +22,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +32,7 @@ public class BorradoresServiceImpl implements BorradoresService {
     private final BorradoresClient borradoresClient;
     private final BorradoresRepository borradoresRepository;
     private final BorradoresMapper borradoresMapper;
+    private final FacturaClienteClientService facturaClienteClientService;
 
     @Override
     public List<PedidoDiarioClientResponse> buscarPedidosDiarios() {
@@ -36,7 +40,7 @@ public class BorradoresServiceImpl implements BorradoresService {
     }
 
     @Override
-    public List<PedidodiarioResponse> listaPedidosDiarios() {
+    public List<PedidoDiarioResponse> listaPedidosDiarios() {
         return this.borradoresMapper.toListPedidodiarioResponse(this.borradoresRepository.findByEstadoBorrador());
     }
 
@@ -65,6 +69,43 @@ public class BorradoresServiceImpl implements BorradoresService {
         this.borradoresRepository.saveAll(pedidoDiarioEntity);
 
         log.info("Sincronizacion completada. Procesados {}", pedidoDiarioEntity.size());
+    }
+
+    @Override
+    public void generarLotePedidosDiarios(List<ComentarioPedidoRequest> comentarioPedidoRequests) {
+        List<BorradoresEntity> actualizar = new ArrayList<>();
+
+        for (ComentarioPedidoRequest c : comentarioPedidoRequests){
+            BorradoresEntity borradores = borradoresRepository.findByDocEntry(c.docEntry());
+            List<FacturasPorCobrarClientResponse> listadoFacturas = this.facturaClienteClientService.buscarFacturasPorCobrarPorCliente(c.codCliente());
+            if(borradores != null){
+                borradores.setComentario(c.comentario());
+                borradores.setEstadoBorrador(EstadoBorrador.LOTE_GENERADO);
+                LocalDate hoy = LocalDate.now();
+                String facturas = listadoFacturas.stream()
+                        .filter(f -> {
+                            LocalDate vencimiento = LocalDate.parse(f.vencimiento());
+                            return vencimiento.isBefore(hoy);
+                        }).map(FacturasPorCobrarClientResponse::comprobante).collect(Collectors.joining(" | "));
+                actualizar.add(borradores);
+                borradores.setFacturasVencidas(facturas);
+            }
+        }
+        borradoresRepository.saveAll(actualizar);
+        log.info("Comentario actualizados: {}", actualizar.size());
+    }
+
+    @Override
+    public void enviarLotePedidoDiarios() {
+        List<BorradoresEntity> lotesGenerados = borradoresRepository.findByEstadoBorradorLoteGenerado();
+
+        lotesGenerados.forEach(b -> {
+            b.setEstadoBorrador(EstadoBorrador.LOTE_ENVIADO);
+            b.setFechaLoteEnviado(LocalDateTime.now());
+        });
+
+        borradoresRepository.saveAll(lotesGenerados);
+        log.info("Lote enviado con {} pedidos", lotesGenerados.size());
     }
 
     private void actualizarCampos(BorradoresEntity pd, PedidoDiarioClientResponse p) {
