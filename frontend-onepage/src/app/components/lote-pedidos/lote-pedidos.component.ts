@@ -31,42 +31,6 @@ export class LotePedidosComponent implements OnInit {
     )
   };
 
-  // generarEnvioPedidos() {
-
-  //   //Si no hay pedidos, no hace nada
-  //   if (this.lotePedidos.length === 0) return;
-
-  //   this.enCargaEnvio = true;
-
-  //   //PASO 1: Fotografiar los cards antes de que desparezcan
-  //   html2canvas(this.gridCards.nativeElement, {
-  //     backgroundColor: '#ffffff',
-  //     scale: 2
-  //   }).then(canvas => {
-
-  //     //PASO 2: Descagar la imagen
-  //     const imagen = canvas.toDataURL('image/jpeg', 0.95);
-  //     const link = document.createElement('a');
-  //     link.download = `pedidos-${this.fechaHoy}.jpg`;
-  //     link.href = imagen;
-  //     link.click();
-
-  //     //PASO 3: Llamar a la API para cambiar estado
-  //     this.lotePedidosService.getGenerarEnvio().subscribe({
-  //       next: () => {
-  //         console.log("Enviado generado y descargado");
-  //         //PASO 4: Recargar la lista (ahora vacia)
-  //         this.showPedidosDiarios();
-  //         this.enCargaEnvio = false;
-  //       },
-  //       error: (err) => {
-  //         console.error("Error al enviar: ", err);
-  //         this.enCargaEnvio = false;
-  //       }
-  //     })
-  //   })
-  // }
-
   generarEnvioPedidos() {
 
     //Si no hay pedidos, no hace nada

@@ -2,23 +2,54 @@
 <div class="flex items-center justify-between mb-5">
   <div>
     <h2 class="text-base font-semibold text-slate-800">Pedidos Diarios</h2>
-    <p class="text-xs text-slate-400 mt-0.5">{{ pedidoDiario.length }} registros</p>
+    <p class="text-xs text-slate-400 mt-0.5">{{ lotePedido.length }} registros</p>
   </div>
-  <button
-    (click)="postLotePedido()"
-    [disabled]="enCarga"
-    class="px-4 py-2 flex flex-row items-center bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 active:bg-indigo-800 transition-colors"
-  >
-    @if (enCarga) {
-      <span class="mr-2">Generando </span>
-      <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-      </svg>
-    } @else {
-      Generar Lote
-    }
-  </button>
+  <div class="flex flex-row gap-2">
+    <button
+      (click)="actualizarPedidos()"
+      [disabled]="enCargaActualizarPedidos"
+      class="px-4 py-2 flex flex-row items-center bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 active:bg-indigo-800 transition-colors"
+    >
+      @if (enCarga) {
+        <span class="mr-2">Actualizar Pedidos </span>
+        <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          />
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+        </svg>
+      } @else {
+        Actualizar Pedidos
+      }
+    </button>
+    <button
+      (click)="postLotePedido()"
+      [disabled]="enCarga"
+      class="px-4 py-2 flex flex-row items-center bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 active:bg-indigo-800 transition-colors"
+    >
+      @if (enCarga) {
+        <span class="mr-2">Generando </span>
+        <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          />
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+        </svg>
+      } @else {
+        Generar Lote
+      }
+    </button>
+  </div>
 </div>
 
 <!-- Card de tabla -->
@@ -57,6 +88,8 @@
           <th class="px-3 xl:px-4 py-3 text-right">F. Vencidas</th>
           <th class="px-3 xl:px-4 py-3 text-right">Por Vencer</th>
           <th class="px-3 xl:px-4 py-3">Más Vencida</th>
+          <th class="px-3 xl:px-4 py-3">Estado</th>
+          <th class="px-3 xl:px-4 py-3">Comentario</th>
         </tr>
       </thead>
 
@@ -66,24 +99,24 @@
             <td
               class="w-[120px] min-w-[120px] max-w-[120px] px-3 py-2.5 font-medium text-slate-800 whitespace-nowrap sticky left-0 bg-white z-10"
             >
-              {{ pd.cardCode }}
+              {{ pd.codCliente }}
             </td>
             <td
               class="w-[250px] min-w-[250px] px-3 py-2.5 text-slate-800 whitespace-nowrap truncate sticky left-[120px] bg-white z-10 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.06)]"
             >
-              {{ pd.cardName }}
+              {{ pd.nombre }}
             </td>
             <td class="px-3 xl:px-4 py-2.5 whitespace-nowrap tabular-nums">
-              {{ pd.pymntGroup }}
+              {{ pd.condicionPago }}
             </td>
             <td class="px-3 xl:px-4 py-2.5 text-right font-medium whitespace-nowrap tabular-nums">
-              {{ pd.docTotalFC | number: '1.2-2' }}
+              {{ pd.montoTotalPedido | number: '1.2-2' }}
             </td>
             <td class="px-3 xl:px-4 py-2.5 text-right whitespace-nowrap tabular-nums">
-              {{ pd.creditLine }}
+              {{ pd.lineaCredito }}
             </td>
             <td class="px-3 xl:px-4 py-2.5 whitespace-nowrap tabular-nums">
-              {{ (pd.docDate | date: 'dd/MM/yyyy') ?? '—' }}
+              {{ (pd.fechaUltimaFacturaPagada | date: 'dd/MM/yyyy') ?? '—' }}
             </td>
             <td
               class="px-3 xl:px-4 py-2.5 text-right whitespace-nowrap tabular-nums font-medium text-red-600"
@@ -91,29 +124,63 @@
               {{ (pd.montoVencido | number: '1.2-2') ?? '—' }}
             </td>
             <td class="px-3 xl:px-4 py-2.5 text-right whitespace-nowrap tabular-nums">
-              {{ pd.montoVencido + pd.montoPorVencer | number: '1.2-2' }}
+              {{ pd.montoTotalDeuda | number: '1.2-2' }}
             </td>
 
             <td class="px-3 xl:px-4 py-2.5 text-right whitespace-nowrap tabular-nums">
-              {{
-                (pd.creditLine > 0
-                  ? ((pd.montoVencido + pd.montoPorVencer) / pd.creditLine) * 100
-                  : 0
-                ) | number: '1.0-0'
-              }}%
+              {{ pd.lineaCreditoUtilizada | number: '1.0-0' }}%
             </td>
             <td class="px-3 xl:px-4 py-2.5 text-right whitespace-nowrap tabular-nums">
-              {{ pd.creditLine > 0 ? 100 : (0 | number: '1.0-0') }}%
+              {{ pd.mora | number: '1.0-0' }}%
             </td>
 
             <td class="px-3 xl:px-4 py-2.5 text-right whitespace-nowrap tabular-nums">
-              {{ pd.facturasVencidas != null ? pd.facturasVencidas : '' }}
+              {{ pd.nroFacturasVencidas }}
             </td>
             <td class="px-3 xl:px-4 py-2.5 text-right whitespace-nowrap tabular-nums">
-              {{ (pd.montoPorVencer | number: '1.2-2') ?? '—' }}
+              {{ (pd.montoPorCobrar | number: '1.2-2') ?? '—' }}
             </td>
             <td class="px-3 xl:px-4 py-2.5 whitespace-nowrap tabular-nums">
-              {{ (pd.fechaVencida | date: 'dd/MM/yyyy') ?? '—' }}
+              {{ (pd.fechaFacturaVencidaMasAntigua | date: 'dd/MM/yyyy') ?? '—' }}
+            </td>
+            <td class="px-3 xl:px-4 py-2.5 whitespace-nowrap tabular-nums">
+              @switch (pd.estadoBorrador) {
+                @case ('PEDIDO_REGISTRADO') {
+                  <svg
+                    class="w-4 h-4 text-gray-400 mx-auto"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 6v6l4 2" />
+                  </svg>
+                }
+                @case ('LOTE_GENERADO') {
+                  <svg
+                    class="w-4 h-4 text-green-500 mx-auto"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+                    <path d="M22 4L12 14.01l-3-3" />
+                  </svg>
+                }
+                @case ('LOTE_ENVIADO') {
+                  {{ pd.estadoBorrador }}
+                }
+              }
+            </td>
+            <td class="px-3 xl:px-4 py-2.5 whitespace-nowrap tabular-nums">
+              <input
+                class="p-1 px-2 bg-white border border-black rounded-lg"
+                type="text"
+                [(ngModel)]="pd.comentario"
+                placeholder="Agregar comentario"
+              />
             </td>
           </tr>
         }
@@ -126,7 +193,7 @@
     <span class="text-xs text-slate-500">
       Página <span class="font-medium text-slate-700">{{ page }}</span> de
       <span class="font-medium text-slate-700">{{ totalPages() }}</span> ·
-      {{ pedidoDiario.length }} registros
+      {{ lotePedido.length }} registros
     </span>
     <div class="flex gap-2">
       <button

@@ -9,8 +9,8 @@ import { ResumenCarteraSap } from '../models/factura-cliente/resumen-cartera-sap
 })
 export class FacturaClienteService {
 
-  // private facturaClienteApi = "http://192.168.1.139:8080/api/v1/facturas-cliente";
-  private facturaClienteApi = "/api/v1/facturas-cliente";
+  private facturaClienteApi = "http://192.168.1.139:8080/api/v1/facturas-cliente";
+  // private facturaClienteApi = "/api/v1/facturas-cliente";
 
   constructor(private http: HttpClient) { }
 
