@@ -1,8 +1,6 @@
 package com.battilana.onepage.service;
 
-import com.battilana.onepage.dto.borradores.ComentarioPedidoRequest;
-import com.battilana.onepage.dto.borradores.PedidoDiarioClientResponse;
-import com.battilana.onepage.dto.borradores.PedidoDiarioResponse;
+import com.battilana.onepage.dto.borradores.*;
 
 import java.util.List;
 
@@ -11,8 +9,10 @@ public interface BorradoresService {
     List<PedidoDiarioClientResponse> buscarPedidosDiarios();
 
     //GESTION BASE DE DATOS LOCAL
-    List<PedidoDiarioResponse> listaPedidosDiarios();
+    List<BorradoresResponse> listaPedidosDiarios();
+    List<BorradoresResponse> listaPedidosGenerados();
     void registroPedidosDiarios();
-    void generarLotePedidosDiarios(List<ComentarioPedidoRequest> comentarioPedidoRequests);
+    void generarLotePedidosDiarios();
     void enviarLotePedidoDiarios();
+    BorradoresResponse agregarComentario(Integer idBorrador, BorradoresRequest borradoresRequest);
 }

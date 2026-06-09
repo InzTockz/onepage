@@ -1,9 +1,7 @@
 package com.battilana.onepage.service.impl;
 
 import com.battilana.onepage.client.BorradoresClient;
-import com.battilana.onepage.dto.borradores.ComentarioPedidoRequest;
-import com.battilana.onepage.dto.borradores.PedidoDiarioClientResponse;
-import com.battilana.onepage.dto.borradores.PedidoDiarioResponse;
+import com.battilana.onepage.dto.borradores.*;
 import com.battilana.onepage.dto.facturas.FacturasPorCobrarClientResponse;
 import com.battilana.onepage.entity.BorradoresEntity;
 import com.battilana.onepage.enums.EstadoBorrador;
@@ -22,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,8 +39,13 @@ public class BorradoresServiceImpl implements BorradoresService {
     }
 
     @Override
-    public List<PedidoDiarioResponse> listaPedidosDiarios() {
+    public List<BorradoresResponse> listaPedidosDiarios() {
         return this.borradoresMapper.toListPedidodiarioResponse(this.borradoresRepository.findByEstadoBorrador());
+    }
+
+    @Override
+    public List<BorradoresResponse> listaPedidosGenerados() {
+        return this.borradoresMapper.toListPedidodiarioResponse(this.borradoresRepository.findByEstadoBorradorLoteGenerado());
     }
 
     @Override
@@ -60,7 +64,7 @@ public class BorradoresServiceImpl implements BorradoresService {
                 pd.setComentario("");
                 actualizarCampos(pd, p);
                 pedidoDiarioEntity.add(pd);
-            } else if(pd.getEstadoBorrador() == EstadoBorrador.PEDIDO_REGISTRADO) {
+            } else if (pd.getEstadoBorrador() == EstadoBorrador.PEDIDO_REGISTRADO) {
                 actualizarCampos(pd, p);
                 pedidoDiarioEntity.add(pd);
             }
@@ -72,27 +76,26 @@ public class BorradoresServiceImpl implements BorradoresService {
     }
 
     @Override
-    public void generarLotePedidosDiarios(List<ComentarioPedidoRequest> comentarioPedidoRequests) {
-        List<BorradoresEntity> actualizar = new ArrayList<>();
+    public void generarLotePedidosDiarios() {
+        List<BorradoresEntity> actualizarBorradores = new ArrayList<>();
+        List<BorradoresEntity> borradores = this.borradoresRepository.findByEstadoBorradorRegistrado();
 
-        for (ComentarioPedidoRequest c : comentarioPedidoRequests){
-            BorradoresEntity borradores = borradoresRepository.findByDocEntry(c.docEntry());
-            List<FacturasPorCobrarClientResponse> listadoFacturas = this.facturaClienteClientService.buscarFacturasPorCobrarPorCliente(c.codCliente());
-            if(borradores != null){
-                borradores.setComentario(c.comentario());
-                borradores.setEstadoBorrador(EstadoBorrador.LOTE_GENERADO);
-                LocalDate hoy = LocalDate.now();
-                String facturas = listadoFacturas.stream()
-                        .filter(f -> {
-                            LocalDate vencimiento = LocalDate.parse(f.vencimiento());
-                            return vencimiento.isBefore(hoy);
-                        }).map(FacturasPorCobrarClientResponse::comprobante).collect(Collectors.joining(" | "));
-                actualizar.add(borradores);
-                borradores.setFacturasVencidas(facturas);
-            }
+        for (BorradoresEntity b : borradores) {
+            List<FacturasPorCobrarClientResponse> listadoFacturas = this.facturaClienteClientService.buscarFacturasPorCobrarPorCliente(b.getCodCliente());
+            b.setEstadoBorrador(EstadoBorrador.LOTE_GENERADO);
+            b.setFechaLoteGenerado(LocalDateTime.now());
+            LocalDate hoy = LocalDate.now();
+            String facturas = listadoFacturas.stream()
+                    .filter(f -> {
+                        LocalDate vencimiento = LocalDate.parse(f.vencimiento());
+                        return vencimiento.isBefore(hoy);
+                    }).map(FacturasPorCobrarClientResponse::comprobante).collect(Collectors.joining(" | "));
+            b.setFacturasVencidas(facturas);
+            actualizarBorradores.add(b);
         }
-        borradoresRepository.saveAll(actualizar);
-        log.info("Comentario actualizados: {}", actualizar.size());
+
+        this.borradoresRepository.saveAll(actualizarBorradores);
+        log.info("Comentario actualizados: {}", actualizarBorradores.size());
     }
 
     @Override
@@ -106,6 +109,19 @@ public class BorradoresServiceImpl implements BorradoresService {
 
         borradoresRepository.saveAll(lotesGenerados);
         log.info("Lote enviado con {} pedidos", lotesGenerados.size());
+    }
+
+    @Override
+    public BorradoresResponse agregarComentario(Integer idBorrador, BorradoresRequest borradoresRequest) {
+        Optional<BorradoresEntity> borradoresEntity = this.borradoresRepository.findById(idBorrador);
+
+        if (borradoresEntity.isPresent()){
+            borradoresEntity.get().setComentario(borradoresRequest.comentario());
+
+            return this.borradoresMapper.toBorradoresResponse(this.borradoresRepository.save(borradoresEntity.get()));
+        } else {
+            return null;
+        }
     }
 
     private void actualizarCampos(BorradoresEntity pd, PedidoDiarioClientResponse p) {

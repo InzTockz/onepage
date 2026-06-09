@@ -5,7 +5,7 @@ import com.battilana.onepage.enums.EstadoBorrador;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public record PedidoDiarioResponse(
+public record BorradoresResponse(
         Integer idLotePedidos,
         Integer docEntry, //NRO UNICO DE PEDIDO GESTIONADO
         String codCliente,
