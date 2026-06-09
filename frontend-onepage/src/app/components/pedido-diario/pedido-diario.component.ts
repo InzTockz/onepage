@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { LotePedidoService } from '../../services/lote-pedido.service';
 import { LotePedido } from '../../models/borrador/lote-pedido.model';
 import { FormsModule } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-pedido-diario',
@@ -20,11 +21,13 @@ export class PedidoDiarioComponent implements OnInit, AfterViewInit, OnDestroy {
 
   enCargaActualizarPedidos: boolean = false;
   enCarga: boolean = false;
-  lotePedido: LotePedido[] = [];
+  lotePedidos: LotePedido[] = [];
+  lotePedido!: LotePedido;
   page = 1;
   pageSize = 10;
 
-  constructor(private borradoresService: BorradoresService, private lotePedidoService: LotePedidoService
+  constructor(private borradoresService: BorradoresService, private lotePedidoService: LotePedidoService,
+    private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -81,13 +84,12 @@ export class PedidoDiarioComponent implements OnInit, AfterViewInit, OnDestroy {
 
   postLotePedido() {
     this.enCarga = true;
-    const comentarios = this.lotePedido.map(p => ({
+    const comentarios = this.lotePedidos.map(p => ({
       docEntry: p.docentry,
       codCliente: p.codCliente,
       comentario: p.comentario || ''
     }))
-
-    this.borradoresService.generarLote(comentarios).subscribe({
+    this.borradoresService.generarLote().subscribe({
       next: () => {
         console.log('Lote generado con exito')
         this.showPedidosDiarios();
@@ -98,12 +100,33 @@ export class PedidoDiarioComponent implements OnInit, AfterViewInit, OnDestroy {
         this.enCarga = false;
       }
     })
-
   }
 
   showPedidosDiarios() {
     return this.borradoresService.getPedidosDiarios().subscribe(
-      data => this.lotePedido = data
+      data => this.lotePedidos = data
+    )
+  }
+
+  guardarComentario(pd: LotePedido) {
+
+    this.borradoresService.agregarComentario(pd.idLotePedidos, pd).subscribe({
+      next: () => {
+        console.log(`Comentario guardado para ${pd.codCliente}`);
+        this.toastr.success('Comentario guardado', 'Pedido');
+      },
+      error: (err) => {
+        console.error(err)
+      }
+    })
+  }
+
+  agregarComentario(idBorrador: number) {
+    this.borradoresService.agregarComentario(idBorrador, this.lotePedido).subscribe(
+      () => {
+        console.log(this.lotePedido.comentario);
+        console.log('Comentario registrado')
+      }
     )
   }
 
@@ -114,11 +137,11 @@ export class PedidoDiarioComponent implements OnInit, AfterViewInit, OnDestroy {
   paginatedData() {
     const start = (this.page - 1) * this.pageSize;
     const end = start + this.pageSize;
-    return this.lotePedido.slice(start, end);
+    return this.lotePedidos.slice(start, end);
   }
 
   totalPages() {
-    return Math.ceil(this.lotePedido.length / this.pageSize);
+    return Math.ceil(this.lotePedidos.length / this.pageSize);
   }
 
   nextPage() {

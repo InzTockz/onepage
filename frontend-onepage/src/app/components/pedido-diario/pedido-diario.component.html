@@ -2,7 +2,7 @@
 <div class="flex items-center justify-between mb-5">
   <div>
     <h2 class="text-base font-semibold text-slate-800">Pedidos Diarios</h2>
-    <p class="text-xs text-slate-400 mt-0.5">{{ lotePedido.length }} registros</p>
+    <p class="text-xs text-slate-400 mt-0.5">{{ lotePedidos.length }} registros</p>
   </div>
   <div class="flex flex-row gap-2">
     <button
@@ -10,7 +10,7 @@
       [disabled]="enCargaActualizarPedidos"
       class="px-4 py-2 flex flex-row items-center bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 active:bg-indigo-800 transition-colors"
     >
-      @if (enCarga) {
+      @if (enCargaActualizarPedidos) {
         <span class="mr-2">Actualizar Pedidos </span>
         <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
           <circle
@@ -179,6 +179,8 @@
                 class="p-1 px-2 bg-white border border-black rounded-lg"
                 type="text"
                 [(ngModel)]="pd.comentario"
+                (keydown.enter)="guardarComentario(pd)"
+                name="comentario"
                 placeholder="Agregar comentario"
               />
             </td>
@@ -193,7 +195,7 @@
     <span class="text-xs text-slate-500">
       Página <span class="font-medium text-slate-700">{{ page }}</span> de
       <span class="font-medium text-slate-700">{{ totalPages() }}</span> ·
-      {{ lotePedido.length }} registros
+      {{ lotePedidos.length }} registros
     </span>
     <div class="flex gap-2">
       <button

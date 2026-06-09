@@ -1,5 +1,5 @@
 export class LotePedido {
-    idLotePedido: number;
+    idLotePedidos: number;
     docentry: number;
     codCliente: string;
     nombre: string;
@@ -24,7 +24,7 @@ export class LotePedido {
     comentario: string;
 
     constructor(
-        idLotePedido: number,
+        idLotePedidos: number,
         docentry: number,
         codCliente: string,
         nombre: string,
@@ -47,7 +47,7 @@ export class LotePedido {
         docTime: number,
         comentario: string
     ) {
-        this.idLotePedido = idLotePedido;
+        this.idLotePedidos = idLotePedidos;
         this.docentry = docentry;
         this.codCliente = codCliente;
         this.nombre = nombre;

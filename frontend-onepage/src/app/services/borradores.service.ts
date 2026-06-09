@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PedidosDiarios } from '../models/pedidos-diarios.model';
 import { LotePedido } from '../models/borrador/lote-pedido.model';
-import { ComentarioPedidoRequest } from '../models/borrador/comentario-pedido-request.model';
 
 @Injectable({
   providedIn: 'root',
@@ -23,12 +22,20 @@ export class BorradoresService {
     return this.http.get<LotePedido[]>(`${this.apiBorrador}/lista/pedidos-diarios`);
   }
 
+  listaLoteGenerado() {
+    return this.http.get<LotePedido[]>(`${this.apiBorrador}/lista/lote-generado`);
+  }
+
+  agregarComentario(idBorrador: number, lotePedido: LotePedido) {
+    return this.http.put<LotePedido>(`${this.apiBorrador}/pedidos-diarios/comentario/${idBorrador}`, lotePedido);
+  }
+
   registrarPedidos() {
     return this.http.post<void>(`${this.apiBorrador}/registro-pedidos`, null);
   }
 
-  generarLote(comentarios: ComentarioPedidoRequest[]): Observable<void> {
-    return this.http.put<void>(`${this.apiBorrador}/pedidos-diarios/generar-lote`, comentarios);
+  generarLote(): Observable<void> {
+    return this.http.put<void>(`${this.apiBorrador}/pedidos-diarios/generar-lote`, null);
   }
 
   enviarLote(): Observable<void> {

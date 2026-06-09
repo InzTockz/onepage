@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { LotePedidoService } from '../../services/lote-pedido.service';
 import { LotePedido } from '../../models/borrador/lote-pedido.model';
 import html2canvas from 'html2canvas-pro';
+import { BorradoresService } from '../../services/borradores.service';
 
 @Component({
   selector: 'app-lote-pedidos',
@@ -19,14 +20,14 @@ export class LotePedidosComponent implements OnInit {
   @ViewChild('gridCards') gridCards!: ElementRef;
   @ViewChildren('cardItem') cardItems!: QueryList<ElementRef>;
 
-  constructor(private lotePedidosService: LotePedidoService) { }
+  constructor(private lotePedidosService: LotePedidoService, private borradoresService: BorradoresService) { }
 
   ngOnInit(): void {
     this.showPedidosDiarios();
   }
 
   showPedidosDiarios() {
-    return this.lotePedidosService.getLotePedidos().subscribe(
+    return this.borradoresService.listaLoteGenerado().subscribe(
       data => this.lotePedidos = data
     )
   };
@@ -42,7 +43,7 @@ export class LotePedidosComponent implements OnInit {
     this.descargarTodosInvidual().then(() => {
 
       //Despues de descargar todas, llame a la API
-      this.lotePedidosService.getGenerarEnvio().subscribe({
+      this.borradoresService.enviarLote().subscribe({
         next: () => {
           console.log("Envio generado y descargado");
           this.showPedidosDiarios();

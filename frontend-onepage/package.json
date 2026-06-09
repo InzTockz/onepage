@@ -37,6 +37,7 @@
     "html2canvas-pro": "^2.0.4",
     "ng-circle-progress": "^1.7.1",
     "ngx-echarts": "^21.0.0",
+    "ngx-toastr": "^20.0.5",
     "postcss": "^8.5.8",
     "rxjs": "~7.8.0",
     "tailwindcss": "^4.2.2",
