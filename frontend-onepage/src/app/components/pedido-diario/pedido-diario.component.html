@@ -88,6 +88,8 @@
           <th class="px-3 xl:px-4 py-3 text-right">F. Vencidas</th>
           <th class="px-3 xl:px-4 py-3 text-right">Por Vencer</th>
           <th class="px-3 xl:px-4 py-3">Más Vencida</th>
+          <th class="px-3 xl:px-4 py-3">Hora Ingreso</th>
+          <th class="px-3 xl:px-4 py-3">Fecha Ingreso</th>
           <th class="px-3 xl:px-4 py-3">Estado</th>
           <th class="px-3 xl:px-4 py-3">Comentario</th>
         </tr>
@@ -128,7 +130,18 @@
             </td>
 
             <td class="px-3 xl:px-4 py-2.5 text-right whitespace-nowrap tabular-nums">
-              {{ pd.lineaCreditoUtilizada | number: '1.0-0' }}%
+              <span
+                class="px-2 py-0.5 rounded-full text-xs font-medium"
+                [class]="
+                  pd.lineaCreditoUtilizada > 100
+                    ? 'bg-red-50 text-red-600'
+                    : pd.lineaCreditoUtilizada >= 80
+                      ? 'bg-amber-50 text-amber-600'
+                      : 'text-gray-700'
+                "
+              >
+                {{ pd.lineaCreditoUtilizada | number: '1.0-0' }}%
+              </span>
             </td>
             <td class="px-3 xl:px-4 py-2.5 text-right whitespace-nowrap tabular-nums">
               {{ pd.mora | number: '1.0-0' }}%
@@ -142,6 +155,12 @@
             </td>
             <td class="px-3 xl:px-4 py-2.5 whitespace-nowrap tabular-nums">
               {{ (pd.fechaFacturaVencidaMasAntigua | date: 'dd/MM/yyyy') ?? '—' }}
+            </td>
+            <td class="px-3 xl:px-4 py-2.5 whitespace-nowrap tabular-nums">
+              {{ formatoHora(pd.docTime) }}
+            </td>
+            <td class="px-3 xl:px-4 py-2.5 whitespace-nowrap tabular-nums">
+              {{ pd.fechaCreacionPedido | date: 'dd/MM/yyyy' }}
             </td>
             <td class="px-3 xl:px-4 py-2.5 whitespace-nowrap tabular-nums">
               @switch (pd.estadoBorrador) {
@@ -176,7 +195,9 @@
             </td>
             <td class="px-3 xl:px-4 py-2.5 whitespace-nowrap tabular-nums">
               <input
-                class="p-1 px-2 bg-white border border-black rounded-lg"
+                [hidden]="pd.lineaCredito > 0"
+                [disabled]="pd.lineaCredito > 0"
+                class="min-w-[200px] w-full p-1.5 px-3 text-xs bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder:text-gray-400 outline-none hover:border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:bg-white transition-all"
                 type="text"
                 [(ngModel)]="pd.comentario"
                 (keydown.enter)="guardarComentario(pd)"

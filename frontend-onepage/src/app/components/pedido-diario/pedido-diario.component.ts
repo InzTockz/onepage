@@ -134,6 +134,12 @@ export class PedidoDiarioComponent implements OnInit, AfterViewInit, OnDestroy {
     return 0
   }
 
+  formatoHora(docTime: number): string {
+    const horas = Math.floor(docTime / 100);
+    const minutos = docTime % 100;
+    return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`
+  }
+
   paginatedData() {
     const start = (this.page - 1) * this.pageSize;
     const end = start + this.pageSize;

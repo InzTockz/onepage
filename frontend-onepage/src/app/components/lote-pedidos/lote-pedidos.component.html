@@ -172,22 +172,50 @@
                 </svg>
                 <span class="text-xs text-red-600 leading-relaxed">
                   <span class="font-semibold">Vencidas:</span>
-                  {{ pd.facturasVencidas == '0' ? '' : pd.facturasVencidas }}
+                  {{ pd.facturasVencidas }}
                 </span>
               </div>
             } @else {
-              <div class="flex items-center gap-1.5">
-                <svg
-                  class="w-3.5 h-3.5 text-green-500"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M20 6L9 17l-5-5" />
-                </svg>
-                <span class="text-xs text-green-600 font-medium">Sin deuda vencida</span>
-              </div>
+              @if (pd.lineaCredito > 0) {
+                <div class="flex items-center gap-1.5">
+                  <svg
+                    class="w-3.5 h-3.5 text-green-500"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                  <span class="text-xs text-green-600 font-medium">Sin deuda vencida</span>
+                </div>
+              } @else {
+                <div class="flex items-center gap-1.5">
+                  <svg
+                    [ngClass]="
+                      pd.comentario === ''
+                        ? 'w-3.5 h-3.5 text-green-600'
+                        : 'w-3.5 h-3.5 text-yellow-600'
+                    "
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                  <span
+                    [ngClass]="
+                      pd.comentario === ''
+                        ? 'text-xs text-green-500 font-medium'
+                        : 'text-xs text-yellow-600 font-medium'
+                    "
+                    class=""
+                  >
+                    {{ pd.comentario === '' ? 'Sin deuda vencida' : pd.comentario }}
+                  </span>
+                </div>
+              }
             }
           </div>
         </div>

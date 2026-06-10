@@ -26,6 +26,10 @@ export class FacturaClienteService {
     return this.http.get<FacturasPorCobrar[]>(`${this.facturaClienteApi}/facturas-por-cobrar/vendedor/${slpCode}`);
   }
 
+  getFacturasPorCobrarPorVendedorYCliente(slpCode: number, ruc: string) {
+    return this.http.get<FacturasPorCobrar[]>(`${this.facturaClienteApi}/facturas-por-cobrar/vendedor/${slpCode}/cliente/${ruc}`);
+  }
+
   getFacturasPorCobrarTopDiez() {
     return this.http.get<FacturasPorCobrarTopDiez[]>(`${this.facturaClienteApi}/facturas-por-cobrar/top-diez`);
   }

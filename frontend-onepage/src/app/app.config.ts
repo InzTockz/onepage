@@ -5,6 +5,7 @@ import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { provideEchartsCore } from 'ngx-echarts';
+import { provideToastr } from 'ngx-toastr';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,5 +17,6 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(
       NgCircleProgressModule.forRoot({})
     ),
+    provideToastr()
   ]
 };

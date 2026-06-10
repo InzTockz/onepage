@@ -151,9 +151,6 @@ export class HomeComponent implements OnInit {
         this.graficaDeBarrasApiladas()
         this.graficaDeLineas()
         this.graficaWorldPopulation()
-        // this.tasaMorosidadPorcentaje
-        // this.montoTotalHistoricoVencido
-        // this.montoTotalHistorico
       }
     )
   }
@@ -507,6 +504,14 @@ export class HomeComponent implements OnInit {
     )
   }
 
+  getFacturasPorCobrarPorVendedorYCliente(slpCode: number, ruc: string) {
+    return this.facturaClienteService.getFacturasPorCobrarPorVendedorYCliente(slpCode, ruc).subscribe(
+      data => {
+        this.facturasPorCobrar = data;
+      }
+    )
+  }
+
   //FACTURAS POR COBRAR: SUMA DE TODOS LOS MONTOS VENCIDOS
   getRecibosVencidosTotal(): number {
     return this.facturasPorCobrar.filter(
@@ -608,22 +613,26 @@ export class HomeComponent implements OnInit {
   }
 
   changeConsultor(value: string) {
+    console.log(this.consultorSeleccionada)
     var convertNumber = Number(value);
     if (value != "-1") {
       // this.getClientesPorVendedor(convertNumber);
       this.getClientesDeudoresPorVendedor(convertNumber);
       this.getFacturasPorCobrarVendedor(convertNumber);
       this.clienteSeleccionado = '-1';
-
     } else {
       // this.getClientes()
       this.getClientesDeudores()
       this.facturasPorCobrar = [];
+      this.clienteSeleccionado = '-1';
     }
   }
 
   changeCliente(ruc: string) {
-    if (ruc != "-1") {
+    if (this.consultorSeleccionada != "-1" && ruc != "-1") {
+      // this.getFacturasPorCobrarCliente(ruc);
+      this.getFacturasPorCobrarPorVendedorYCliente(Number(this.consultorSeleccionada), ruc);
+    } else if (this.consultorSeleccionada == "-1" && ruc != "-1") {
       this.getFacturasPorCobrarCliente(ruc);
     } else {
       this.facturasPorCobrar = [];
