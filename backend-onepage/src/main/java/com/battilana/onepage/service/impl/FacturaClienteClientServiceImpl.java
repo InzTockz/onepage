@@ -32,6 +32,11 @@ public class FacturaClienteClientServiceImpl implements FacturaClienteClientServ
     }
 
     @Override
+    public List<FacturasPorCobrarClientResponse> buscarFacturasPorVendedorYCliente(Integer slpCode, String ruc) {
+        return this.facturaClienteClient.buscarFacturasPorVendedorYCliente(slpCode, ruc);
+    }
+
+    @Override
     public List<FacturasPorCobrarTopDiezClientResponse> buscarFacturasPorCobrarTopDiez() {
         return this.facturaClienteClient.buscarFacturasPorCobrarTopDiez();
     }

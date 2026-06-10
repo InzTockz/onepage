@@ -22,6 +22,9 @@ public interface FacturaClienteClient {
     @RequestMapping(method = RequestMethod.GET, value = "/facturas-por-cobrar/vendedor/{slpCode}")
     List<FacturasPorCobrarClientResponse> buscarFacturasPorCobrarPorVendedor(@PathVariable Integer slpCode);
 
+    @RequestMapping(method = RequestMethod.GET, value = "/facturas-por-cobrar/vendedor/{slpCode}/cliente/{ruc}")
+    List<FacturasPorCobrarClientResponse> buscarFacturasPorVendedorYCliente(@PathVariable Integer slpCode, @PathVariable String ruc);
+
     @RequestMapping(method = RequestMethod.GET, value = "/facturas-por-cobrar/top-diez")
     List<FacturasPorCobrarTopDiezClientResponse> buscarFacturasPorCobrarTopDiez();
 

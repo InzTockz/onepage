@@ -34,6 +34,11 @@ public class FacturaClienteClientController {
         return ResponseEntity.status(HttpStatus.OK).body(this.facturaClienteClientService.buscarFacturasPorCobrarPorVendedor(slpCode));
     }
 
+    @GetMapping("/facturas-por-cobrar/vendedor/{slpCode}/cliente/{ruc}")
+    public ResponseEntity<List<FacturasPorCobrarClientResponse>> buscarFacturasPorVendedorYCliente(@PathVariable Integer slpCode, @PathVariable String ruc){
+        return ResponseEntity.status(HttpStatus.OK).body(this.facturaClienteClientService.buscarFacturasPorVendedorYCliente(slpCode, ruc));
+    }
+
     @GetMapping("/facturas-por-cobrar/top-diez")
     public ResponseEntity<List<FacturasPorCobrarTopDiezClientResponse>> buscarFacturasPorCobrarTopDiez(){
         return ResponseEntity.status(HttpStatus.OK).body(this.facturaClienteClientService.buscarFacturasPorCobrarTopDiez());
