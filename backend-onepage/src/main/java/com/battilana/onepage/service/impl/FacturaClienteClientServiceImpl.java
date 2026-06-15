@@ -3,6 +3,7 @@ package com.battilana.onepage.service.impl;
 import com.battilana.onepage.client.FacturaClienteClient;
 import com.battilana.onepage.dto.facturas.FacturasPorCobrarClientResponse;
 import com.battilana.onepage.dto.facturas.FacturasPorCobrarTopDiezClientResponse;
+import com.battilana.onepage.dto.facturas.FacturasPorCobrarTopDiezMasVencidasClientResponse;
 import com.battilana.onepage.dto.facturas.ResumenCarteraClientResponse;
 import com.battilana.onepage.service.FacturaClienteClientService;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,11 @@ public class FacturaClienteClientServiceImpl implements FacturaClienteClientServ
     @Override
     public List<FacturasPorCobrarTopDiezClientResponse> buscarFacturasPorCobrarTopDiez() {
         return this.facturaClienteClient.buscarFacturasPorCobrarTopDiez();
+    }
+
+    @Override
+    public List<FacturasPorCobrarTopDiezMasVencidasClientResponse> facturasPorCobrarTopDiezMasVencidas() {
+        return this.facturaClienteClient.facturasPorCobrarTopDiezMasVencidas();
     }
 
     @Override

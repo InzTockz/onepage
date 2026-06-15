@@ -2,6 +2,7 @@ package com.battilana.onepage.client;
 
 import com.battilana.onepage.dto.facturas.FacturasPorCobrarClientResponse;
 import com.battilana.onepage.dto.facturas.FacturasPorCobrarTopDiezClientResponse;
+import com.battilana.onepage.dto.facturas.FacturasPorCobrarTopDiezMasVencidasClientResponse;
 import com.battilana.onepage.dto.facturas.ResumenCarteraClientResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,9 @@ public interface FacturaClienteClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/facturas-por-cobrar/top-diez")
     List<FacturasPorCobrarTopDiezClientResponse> buscarFacturasPorCobrarTopDiez();
+
+    @RequestMapping(method = RequestMethod.GET, value = "/facturas-por-cobrar/vencidos/top-diez")
+    List<FacturasPorCobrarTopDiezMasVencidasClientResponse> facturasPorCobrarTopDiezMasVencidas();
 
     @RequestMapping(method = RequestMethod.GET, value = "/resumen-cartera")
     List<ResumenCarteraClientResponse> resumentCartera();

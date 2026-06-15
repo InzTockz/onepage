@@ -2,6 +2,7 @@ package com.battilana.onepage.controller;
 
 import com.battilana.onepage.dto.facturas.FacturasPorCobrarClientResponse;
 import com.battilana.onepage.dto.facturas.FacturasPorCobrarTopDiezClientResponse;
+import com.battilana.onepage.dto.facturas.FacturasPorCobrarTopDiezMasVencidasClientResponse;
 import com.battilana.onepage.dto.facturas.ResumenCarteraClientResponse;
 import com.battilana.onepage.service.FacturaClienteClientService;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,11 @@ public class FacturaClienteClientController {
     @GetMapping("/facturas-por-cobrar/top-diez")
     public ResponseEntity<List<FacturasPorCobrarTopDiezClientResponse>> buscarFacturasPorCobrarTopDiez(){
         return ResponseEntity.status(HttpStatus.OK).body(this.facturaClienteClientService.buscarFacturasPorCobrarTopDiez());
+    }
+
+    @GetMapping("/facturas-por-cobrar/vencidos/top-diez")
+    public ResponseEntity<List<FacturasPorCobrarTopDiezMasVencidasClientResponse>> facturasPorCobrarTopDiezMasVencidas(){
+        return ResponseEntity.status(HttpStatus.OK).body(this.facturaClienteClientService.facturasPorCobrarTopDiezMasVencidas());
     }
 
     @GetMapping("/resumen-cartera")

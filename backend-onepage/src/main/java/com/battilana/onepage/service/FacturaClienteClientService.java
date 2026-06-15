@@ -2,6 +2,7 @@ package com.battilana.onepage.service;
 
 import com.battilana.onepage.dto.facturas.FacturasPorCobrarClientResponse;
 import com.battilana.onepage.dto.facturas.FacturasPorCobrarTopDiezClientResponse;
+import com.battilana.onepage.dto.facturas.FacturasPorCobrarTopDiezMasVencidasClientResponse;
 import com.battilana.onepage.dto.facturas.ResumenCarteraClientResponse;
 
 import java.util.List;
@@ -13,5 +14,6 @@ public interface FacturaClienteClientService {
     List<FacturasPorCobrarClientResponse> buscarFacturasPorCobrarPorVendedor(Integer slpCode);
     List<FacturasPorCobrarClientResponse> buscarFacturasPorVendedorYCliente(Integer slpCode, String ruc);
     List<FacturasPorCobrarTopDiezClientResponse> buscarFacturasPorCobrarTopDiez();
+    List<FacturasPorCobrarTopDiezMasVencidasClientResponse> facturasPorCobrarTopDiezMasVencidas();
     List<ResumenCarteraClientResponse> resumenCartera();
 }
