@@ -9,7 +9,7 @@ import { LotePedido } from '../models/borrador/lote-pedido.model';
 })
 export class LotePedidoService {
 
-  private apiLotePedido: string = "http://192.168.1.139:8080/api/v1/lote-pedido";
+  private apiLotePedido: string = "http://localhost:8080/api/v1/lote-pedido";
   // private apiLotePedido: string = "/api/v1/lote-pedido";
 
   constructor(private http: HttpClient) { }

@@ -8,30 +8,41 @@ import { ResumenCarteraSap } from '../models/factura-cliente/resumen-cartera-sap
   providedIn: 'root',
 })
 export class FacturaClienteService {
-
-  private facturaClienteApi = "http://192.168.1.139:8080/api/v1/facturas-cliente";
+  private facturaClienteApi = 'http://localhost:8080/api/v1/facturas-cliente';
   // private facturaClienteApi = "/api/v1/facturas-cliente";
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   getFacturasPorCobrar() {
     return this.http.get<FacturasPorCobrar[]>(`${this.facturaClienteApi}/facturas-por-cobrar`);
   }
 
   getFacturasPorCobrarCliente(ruc: string) {
-    return this.http.get<FacturasPorCobrar[]>(`${this.facturaClienteApi}/facturas-por-cobrar/cliente/${ruc}`);
+    return this.http.get<FacturasPorCobrar[]>(
+      `${this.facturaClienteApi}/facturas-por-cobrar/cliente/${ruc}`,
+    );
   }
 
   getFacturasPorCobrarVendedor(slpCode: number) {
-    return this.http.get<FacturasPorCobrar[]>(`${this.facturaClienteApi}/facturas-por-cobrar/vendedor/${slpCode}`);
+    return this.http.get<FacturasPorCobrar[]>(
+      `${this.facturaClienteApi}/facturas-por-cobrar/vendedor/${slpCode}`,
+    );
   }
 
   getFacturasPorCobrarPorVendedorYCliente(slpCode: number, ruc: string) {
-    return this.http.get<FacturasPorCobrar[]>(`${this.facturaClienteApi}/facturas-por-cobrar/vendedor/${slpCode}/cliente/${ruc}`);
+    return this.http.get<FacturasPorCobrar[]>(
+      `${this.facturaClienteApi}/facturas-por-cobrar/vendedor/${slpCode}/cliente/${ruc}`,
+    );
   }
 
   getFacturasPorCobrarTopDiez() {
-    return this.http.get<FacturasPorCobrarTopDiez[]>(`${this.facturaClienteApi}/facturas-por-cobrar/top-diez`);
+    return this.http.get<FacturasPorCobrarTopDiez[]>(
+      `${this.facturaClienteApi}/facturas-por-cobrar/top-diez`,
+    );
+  }
+
+  getFacturasPorCobrarVencidasTopDiez() {
+    return this.http.get<any[]>(`${this.facturaClienteApi}/facturas-por-cobrar/vencidos/top-diez`);
   }
 
   getResumenCartera() {

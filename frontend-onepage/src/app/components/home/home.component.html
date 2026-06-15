@@ -364,13 +364,46 @@
           <div
             class="col-span-3 flex flex-col gap-2 bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow"
           >
-            <div>
-              <span class="text-xs font-bold text-blue-900 uppercase tracking-widest"
-                >Top 10 clientes</span
-              >
-              <p class="text-[10px] text-gray-500 mt-0.5">Clientes con mayor saldo pendiente</p>
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-xs font-bold text-blue-900 uppercase tracking-widest"
+                  >Top 10</span
+                >
+                <p class="text-[10px] text-gray-500 mt-0.5">
+                  @if (topDiezTab() === 0) {
+                    Clientes con mayor saldo pendiente
+                  } @else {
+                    Facturas con mayor antigüedad vencida
+                  }
+                </p>
+              </div>
+
+              <!-- Sub-tabs -->
+              <div class="flex gap-1 bg-gray-100 rounded-lg p-1">
+                @for (tab of topDiezTabs; track $index) {
+                  <button
+                    (click)="topDiezTab.set($index)"
+                    class="px-3 py-1.5 text-[10px] font-semibold rounded-md transition-all"
+                    [class]="
+                      topDiezTab() === $index
+                        ? 'bg-white text-blue-900 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-800'
+                    "
+                  >
+                    {{ tab }}
+                  </button>
+                }
+              </div>
             </div>
-            <div echarts [options]="topDiezChart" class="w-full h-80"></div>
+
+            @switch (topDiezTab()) {
+              @case (0) {
+                <div echarts [options]="topDiezChart" class="w-full h-80"></div>
+              }
+              @case (1) {
+                <div echarts [options]="topDiezVencidasChart" class="w-full h-80"></div>
+              }
+            }
           </div>
         </div>
       }

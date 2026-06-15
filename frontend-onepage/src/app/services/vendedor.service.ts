@@ -7,7 +7,7 @@ import { Vendedor } from '../models/vendedor/vendedor.model';
 })
 export class VendedorService {
 
-  private vendedorApi: string = "http://192.168.1.139:8080/api/v1/vendedor";
+  private vendedorApi: string = "http://localhost:8080/api/v1/vendedor";
   // private vendedorApi: string = "/api/v1/vendedor";
 
   constructor(private http: HttpClient) { }

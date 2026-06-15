@@ -8,7 +8,7 @@ import { ResumenCartera } from '../models/factura-cliente/resumen-cartera.model'
 })
 export class FacturaService {
 
-  private apiFactura: string = "http://192.168.1.139:8080/api/v1/factura";
+  private apiFactura: string = "http://localhost:8080/api/v1/factura";
   // private apiFactura: string = "/api/v1/factura";
 
   constructor(private http: HttpClient) { }
