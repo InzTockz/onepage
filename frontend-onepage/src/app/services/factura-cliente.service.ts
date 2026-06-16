@@ -11,7 +11,7 @@ export class FacturaClienteService {
   private facturaClienteApi = 'http://localhost:8080/api/v1/facturas-cliente';
   // private facturaClienteApi = "/api/v1/facturas-cliente";
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getFacturasPorCobrar() {
     return this.http.get<FacturasPorCobrar[]>(`${this.facturaClienteApi}/facturas-por-cobrar`);
@@ -48,4 +48,6 @@ export class FacturaClienteService {
   getResumenCartera() {
     return this.http.get<ResumenCarteraSap[]>(`${this.facturaClienteApi}/resumen-cartera`);
   }
+
+
 }

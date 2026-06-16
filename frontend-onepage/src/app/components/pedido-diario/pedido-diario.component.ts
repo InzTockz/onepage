@@ -85,7 +85,7 @@ export class PedidoDiarioComponent implements OnInit, AfterViewInit, OnDestroy {
   postLotePedido() {
     this.enCarga = true;
     const comentarios = this.lotePedidos.map(p => ({
-      docEntry: p.docentry,
+      docEntry: p.docEntry,
       codCliente: p.codCliente,
       comentario: p.comentario || ''
     }))

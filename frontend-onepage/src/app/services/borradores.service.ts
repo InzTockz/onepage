@@ -26,6 +26,10 @@ export class BorradoresService {
     return this.http.get<LotePedido[]>(`${this.apiBorrador}/lista/lote-generado`);
   }
 
+  listaPedidosEnviados() {
+    return this.http.get<LotePedido[]>(`${this.apiBorrador}/lista/lote-enviado`);
+  }
+
   agregarComentario(idBorrador: number, lotePedido: LotePedido) {
     return this.http.put<LotePedido>(`${this.apiBorrador}/pedidos-diarios/comentario/${idBorrador}`, lotePedido);
   }

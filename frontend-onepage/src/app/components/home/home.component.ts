@@ -25,6 +25,7 @@ import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsCoreOption } from 'echarts/core';
 import { ResumenCarteraSap } from '../../models/factura-cliente/resumen-cartera-sap.model';
 import { ClienteDeudor } from '../../models/cliente/cliente-deudor.model';
+import { ToastrService } from 'ngx-toastr';
 echarts.use([
   BarChart,
   LineChart,
@@ -104,6 +105,11 @@ export class HomeComponent implements OnInit {
   ];
   topDiezChart: EChartsCoreOption = {};
 
+  //Generar corte
+  mesSeleccionado: number | null = null;
+  modalAbierto: boolean = false;
+  enCargaCorte: boolean = false;  // ← nuevo
+
   //Subtabs del top 10
   topDiezTab = signal(0);
   topDiezTabs = ['Clientes', 'Facturas mas vencidas'];
@@ -112,6 +118,7 @@ export class HomeComponent implements OnInit {
     nombre: string;
     comprobante: string;
     saldo: number;
+    vencimiento: string;
     diasVencido: number;
   }[] = [];
   topDiezVencidasChart: EChartsCoreOption = {};
@@ -136,13 +143,14 @@ export class HomeComponent implements OnInit {
     private vendedorService: VendedorService,
     private facturaClienteService: FacturaClienteService,
     private facturaService: FacturaService,
-  ) {}
+    private toastrService: ToastrService
+  ) { }
 
   ngOnInit(): void {
     // this.getClientes();
     this.getVendedor();
     this.getFacturasPorCobrarTopDiez();
-    this.getFacturasMasVencidasTopDiez(); // 👈 agrega esta
+    this.getFacturasMasVencidasTopDiez();
     this.cargarDataCompleta();
     this.getClientesDeudores();
   }
@@ -545,6 +553,7 @@ export class HomeComponent implements OnInit {
         nombre: f.nombre,
         comprobante: f.comprobante,
         saldo: f.saldo,
+        vencimiento: f.vencimiento,
         diasVencido: f.diasVencido,
       }));
       this.graficaTopDiezVencidas();
@@ -615,11 +624,14 @@ export class HomeComponent implements OnInit {
         formatter: (params: any) => {
           const p = params[0];
           const factura = datos[p.dataIndex];
+          const [anio, mes, dia] = factura.vencimiento.split('-');
+          const vencimiento = `${dia}/${mes}/${anio}`;
           const monto = factura.saldo.toLocaleString('es', { minimumFractionDigits: 2 });
           return `
           <b>${factura.nombre}</b><br/>
           <span style="color:#9ca3af; font-size:11px;">Comprobante:</span> ${factura.comprobante}<br/>
           <span style="color:#9ca3af; font-size:11px;">Días vencidos:</span> <b>${factura.diasVencido}</b><br/>
+          <span style="color:#9ca3af; font-size:11px;">Fecha de Vencimiento:</span> <b>${vencimiento}</b><br/>
           <span style="color:#9ca3af; font-size:11px;">Saldo:</span> $ ${monto}
         `;
         },
@@ -677,6 +689,51 @@ export class HomeComponent implements OnInit {
         this.facturasPorCobrarTopDiez.push({ name: f.nombre, value: f.saldo });
       }
       this.graficaTopDiez();
+    });
+  }
+
+  postRegistrarFactruasDelMes(periodo: number) {
+    this.facturaService.postRegistrarFactruasDelMes(periodo).subscribe({
+      next: () => {
+        this.toastrService.success('Se generó el corte', 'Corte mensual');
+        this.cargarDataCompleta(); // refresca la tabla con el nuevo periodo
+      },
+      error: (err) => {
+        this.toastrService.error('No se pudo generar el corte', 'Error');
+        console.error(err);
+      }
+    });
+  }
+
+  abrirModalCorte(): void {
+    this.modalAbierto = true;
+    this.mesSeleccionado = null;
+  }
+
+  cerrarModalCorte(): void {
+    this.modalAbierto = false;
+    this.mesSeleccionado = null;
+  }
+
+  confirmarCorte(): void {
+    if (!this.mesSeleccionado) {
+      this.toastrService.warning('Selecciona un mes', 'Atención');
+      return;
+    }
+
+    this.enCargaCorte = true;
+    this.facturaService.postRegistrarFactruasDelMes(this.mesSeleccionado).subscribe({
+      next: () => {
+        this.toastrService.success('Se generó el corte', 'Corte mensual');
+        this.cargarDataCompleta();
+        this.enCargaCorte = false;
+        this.cerrarModalCorte();
+      },
+      error: (err) => {
+        this.toastrService.error('No se pudo generar el corte', 'Error');
+        this.enCargaCorte = false;
+        console.error(err);
+      }
     });
   }
 

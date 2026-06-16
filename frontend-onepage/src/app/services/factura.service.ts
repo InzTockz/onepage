@@ -34,6 +34,10 @@ export class FacturaService {
   getResumenCarteraPorVendedor(vendedor: string) {
     return this.http.get<ResumenCartera[]>(`${this.apiFactura}/resumen-cartera/vendedor?vendedor=${vendedor}`)
   }
+
+  postRegistrarFactruasDelMes(periodo: number) {
+    return this.http.post<void>(`${this.apiFactura}/registro-facturas/mensual/${periodo}`, null);
+  }
 }
 
 

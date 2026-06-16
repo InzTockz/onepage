@@ -64,18 +64,25 @@
             >
               Envíos WhatsApp
             </a>
+            <a
+              routerLink="/historial-envios"
+              routerLinkActive="nav-sub-active"
+              class="flex items-center px-3 py-2 rounded-md text-slate-400 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+            >
+              Historial envios
+            </a>
           </div>
         }
       </div>
 
       <!-- Segunda Gestión -->
-      <div hidden>
+      <div>
         <button
           (click)="segundaGestion = !segundaGestion"
           class="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
         >
           <svg lucideFileText class="w-4 h-4 shrink-0"></svg>
-          <span class="flex-1 text-left">Segunda Gestión</span>
+          <span class="flex-1 text-left">Gestion de Dietario</span>
           <svg
             lucideChevronDown
             class="w-4 h-4 transition-transform duration-200"

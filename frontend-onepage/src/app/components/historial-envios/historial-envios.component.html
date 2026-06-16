@@ -1,0 +1,363 @@
+<div class="w-full">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-5">
+    <div>
+      <h2 class="text-base font-bold text-blue-900 uppercase tracking-widest">
+        Historial de envíos
+      </h2>
+      <p class="text-xs text-gray-500 mt-0.5">
+        {{ historialFiltrado.length }} registro(s) encontrado(s)
+      </p>
+    </div>
+  </div>
+
+  <!-- Buscador -->
+  <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm mb-4">
+    <div class="relative">
+      <svg
+        class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <circle cx="11" cy="11" r="8" />
+        <path d="M21 21l-4.35-4.35" />
+      </svg>
+      <input
+        type="text"
+        [(ngModel)]="filtroTexto"
+        (ngModelChange)="onFiltroChange()"
+        placeholder="Buscar por nombre o RUC..."
+        class="w-full pl-9 pr-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder:text-gray-400 outline-none hover:border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:bg-white transition-all"
+      />
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  @if (historialFiltrado.length === 0) {
+    <div
+      class="bg-white border border-gray-200 rounded-2xl py-16 flex flex-col items-center justify-center text-gray-400"
+    >
+      <svg
+        class="w-12 h-12 mb-3 text-gray-300"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+      >
+        <path d="M12 8v4l3 3M3.05 11a9 9 0 119 10" />
+        <path d="M3 4v5h5" />
+      </svg>
+      <p class="text-sm font-medium">Sin registros en el historial</p>
+      <p class="text-xs mt-1 text-gray-500">No se encontraron envíos enviados</p>
+    </div>
+  } @else {
+    <div class="relative">
+      <!-- Línea vertical del timeline -->
+      <div
+        class="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-green-200 via-green-100 to-transparent"
+      ></div>
+
+      <div class="space-y-3">
+        @for (item of historialPaginado; track $index) {
+          <div class="relative pl-12">
+            <!-- Punto del timeline con check -->
+            <div
+              class="absolute left-1 top-4 w-6 h-6 rounded-full bg-green-500 border-4 border-white shadow-md flex items-center justify-center"
+            >
+              <svg
+                class="w-3 h-3 text-white"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"
+              >
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            </div>
+
+            <!-- Card del registro -->
+            <div
+              class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all"
+            >
+              <!-- Header de card (clickeable) -->
+              <div
+                class="px-5 py-3 cursor-pointer flex items-center justify-between gap-3"
+                (click)="toggleItem(item.codCliente)"
+              >
+                <div class="flex items-center gap-3 min-w-0 flex-1">
+                  <!-- Avatar inicial -->
+                  <div
+                    class="shrink-0 w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-xs font-bold text-blue-700"
+                  >
+                    {{ item.nombre.charAt(0) }}
+                  </div>
+
+                  <div class="min-w-0 flex-1">
+                    <h3 class="text-sm font-semibold text-gray-800 truncate">{{ item.nombre }}</h3>
+                    <p class="text-[10px] text-gray-500 font-mono mt-0.5">
+                      RUC: {{ item.codCliente }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Monto + fecha + flecha -->
+                <div class="flex items-center gap-4">
+                  <div class="text-right">
+                    <p class="text-sm font-bold text-gray-800 tabular-nums">
+                      $ {{ item.montoTotalPedido | number: '1.2-2' }}
+                    </p>
+                    <p class="text-[10px] text-gray-500">
+                      {{ (item.fechaLoteEnviado | date: 'dd/MM/yyyy') ?? '—' }}
+                    </p>
+                  </div>
+                  <svg
+                    class="w-4 h-4 text-gray-400 transition-transform"
+                    [class.rotate-180]="itemExpandido() === item.codCliente"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Detalle expandible -->
+              @if (itemExpandido() === item.codCliente) {
+                <div class="px-5 pb-4 pt-1 border-t border-gray-100">
+                  <!-- Grid de info crediticia -->
+                  <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-3 mt-3 text-xs">
+                    <div>
+                      <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">
+                        Línea de crédito
+                      </p>
+                      <p class="font-semibold text-gray-800 tabular-nums">
+                        $ {{ item.lineaCredito | number: '1.2-2' }}
+                      </p>
+                    </div>
+                    <div>
+                      <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">
+                        Condición de pago
+                      </p>
+                      <p class="font-semibold text-gray-800">{{ item.condicionPago }}</p>
+                    </div>
+                    <div>
+                      <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">
+                        Utilización L/C
+                      </p>
+                      <span
+                        class="px-2 py-0.5 rounded-full text-xs font-semibold"
+                        [class]="
+                          item.lineaCreditoUtilizada > 100
+                            ? 'bg-red-50 text-red-600'
+                            : item.lineaCreditoUtilizada >= 80
+                              ? 'bg-amber-50 text-amber-600'
+                              : 'bg-green-50 text-green-700'
+                        "
+                      >
+                        {{ item.lineaCreditoUtilizada | number: '1.0-0' }}%
+                      </span>
+                    </div>
+                    <div>
+                      <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Mora</p>
+                      <p
+                        class="font-semibold tabular-nums"
+                        [class]="
+                          item.mora > 30
+                            ? 'text-red-600'
+                            : item.mora > 0
+                              ? 'text-amber-600'
+                              : 'text-gray-800'
+                        "
+                      >
+                        {{ item.mora | number: '1.0-0' }}%
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Separador -->
+                  <div class="my-4 border-t border-dashed border-gray-200"></div>
+
+                  <!-- Grid de deuda -->
+                  <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-3 text-xs">
+                    <div>
+                      <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">
+                        Deuda total
+                      </p>
+                      <p class="font-semibold text-gray-800 tabular-nums">
+                        $ {{ item.montoTotalDeuda | number: '1.2-2' }}
+                      </p>
+                    </div>
+                    <div>
+                      <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">
+                        Por cobrar
+                      </p>
+                      <p class="font-semibold text-gray-800 tabular-nums">
+                        $ {{ item.montoPorCobrar | number: '1.2-2' }}
+                      </p>
+                    </div>
+                    <div>
+                      <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Vencido</p>
+                      <p
+                        class="font-semibold tabular-nums"
+                        [class]="item.montoVencido > 0 ? 'text-red-600' : 'text-gray-800'"
+                      >
+                        $ {{ item.montoVencido | number: '1.2-2' }}
+                      </p>
+                    </div>
+                    <div>
+                      <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">
+                        Fact. vencidas
+                      </p>
+                      <p
+                        class="font-semibold tabular-nums"
+                        [class]="item.nroFacturasVencidas > 0 ? 'text-red-600' : 'text-gray-800'"
+                      >
+                        {{ item.nroFacturasVencidas }}
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Separador -->
+                  <div class="my-4 border-t border-dashed border-gray-200"></div>
+
+                  <!-- Fechas del proceso -->
+                  <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-3 text-xs">
+                    <div>
+                      <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">
+                        Fact. más vencida
+                      </p>
+                      <p class="font-medium text-gray-700">
+                        {{ (item.fechaFacturaVencidaMasAntigua | date: 'dd/MM/yyyy') ?? '—' }}
+                      </p>
+                    </div>
+                    <div>
+                      <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">
+                        Último pago
+                      </p>
+                      <p class="font-medium text-gray-700">
+                        {{ (item.fechaUltimaFacturaPagada | date: 'dd/MM/yyyy') ?? '—' }}
+                      </p>
+                    </div>
+                    <div>
+                      <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">
+                        Lote generado
+                      </p>
+                      <p class="font-medium text-gray-700">
+                        {{ (item.fechaLoteGenerado | date: 'dd/MM/yyyy') ?? '—' }}
+                      </p>
+                    </div>
+                    <div>
+                      <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">
+                        Lote enviado
+                      </p>
+                      <p class="font-medium text-gray-700">
+                        {{ (item.fechaLoteEnviado | date: 'dd/MM/yyyy') ?? '—' }}
+                        <span class="text-gray-500 ml-1">{{
+                          item.fechaLoteEnviado | date: 'HH:mm'
+                        }}</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Comentario -->
+                  @if (item.comentario) {
+                    <div
+                      class="mt-4 p-3 bg-yellow-50 border border-yellow-100 rounded-lg flex items-start gap-2"
+                    >
+                      <svg
+                        class="w-4 h-4 text-yellow-600 shrink-0 mt-0.5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                      </svg>
+                      <div>
+                        <p
+                          class="text-[10px] font-bold text-yellow-700 uppercase tracking-wider mb-0.5"
+                        >
+                          Comentario
+                        </p>
+                        <p class="text-xs text-yellow-900">{{ item.comentario }}</p>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Paginación -->
+    @if (totalPaginas > 1) {
+      <div class="flex items-center justify-between mt-5 px-2">
+        <p class="text-xs text-gray-500">
+          Mostrando
+          <span class="font-semibold text-gray-700">{{ rangoMostrado.desde }}</span>
+          -
+          <span class="font-semibold text-gray-700">{{ rangoMostrado.hasta }}</span>
+          de
+          <span class="font-semibold text-gray-700">{{ historialFiltrado.length }}</span>
+        </p>
+
+        <div class="flex items-center gap-1">
+          <!-- Botón anterior -->
+          <button
+            (click)="cambiarPagina(paginaActual() - 1)"
+            [disabled]="paginaActual() === 1"
+            class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          >
+            <svg
+              class="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+
+          <!-- Números de página -->
+          @for (p of paginasArray; track $index) {
+            <button
+              (click)="cambiarPagina(p)"
+              class="w-8 h-8 flex items-center justify-center rounded-lg text-xs font-semibold transition-all"
+              [class]="
+                paginaActual() === p
+                  ? 'bg-blue-900 text-white'
+                  : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+              "
+            >
+              {{ p }}
+            </button>
+          }
+
+          <!-- Botón siguiente -->
+          <button
+            (click)="cambiarPagina(paginaActual() + 1)"
+            [disabled]="paginaActual() === totalPaginas"
+            class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          >
+            <svg
+              class="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    }
+  }
+</div>
