@@ -11,16 +11,16 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class FacturasProgramadas {
 
-    private final FacturaClienteService facturaClienteService;
-
-    @Scheduled(cron = "0 59 23 L * ?")
-    public void registroMensualFacturas(){
-        log.info("=== TAREA PROGRAMADA: Registro de facturas ===");
-        try {
-            facturaClienteService.registrarFacturasDelMes();
-            log.info("=== TAREA COMPELTADA EXITOSAMENTE ===");
-        } catch (Exception e){
-            log.error("=== ERROR EN TAREA PROGRMADA: {}", e.getMessage(), e);
-        }
-    }
+//    private final FacturaClienteService facturaClienteService;
+//
+//    @Scheduled(cron = "0 59 23 L * ?")
+//    public void registroMensualFacturas(){
+//        log.info("=== TAREA PROGRAMADA: Registro de facturas ===");
+//        try {
+//            facturaClienteService.registrarFacturasDelMes();
+//            log.info("=== TAREA COMPELTADA EXITOSAMENTE ===");
+//        } catch (Exception e){
+//            log.error("=== ERROR EN TAREA PROGRMADA: {}", e.getMessage(), e);
+//        }
+//    }
 }

@@ -11,6 +11,7 @@ public interface BorradoresService {
     //GESTION BASE DE DATOS LOCAL
     List<BorradoresResponse> listaPedidosDiarios();
     List<BorradoresResponse> listaPedidosGenerados();
+    List<BorradoresResponse> listaPedidosEnviados();
     void registroPedidosDiarios();
     void generarLotePedidosDiarios();
     void enviarLotePedidoDiarios();

@@ -100,4 +100,9 @@ public interface FacturaClienteRepository extends JpaRepository<FacturaClienteEn
             "FROM FacturaClienteEntity F " +
             "WHERE YEAR(F.fechaRegistro)=:anio")
     Integer obtenerUltimoPeriodo(@Param("anio") Integer anio);
+
+    @Query("SELECT CASE WHEN COUNT(f) > 0 THEN true ELSE false END " +
+            "FROM FacturaClienteEntity f " +
+            "WHERE f.periodo = :periodo AND YEAR(f.fechaRegistro) =:anio")
+    boolean existePeriodoEnAnio(@Param("periodo") int periodo, @Param("anio") int anio);
 }

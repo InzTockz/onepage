@@ -49,6 +49,11 @@ public class BorradoresServiceImpl implements BorradoresService {
     }
 
     @Override
+    public List<BorradoresResponse> listaPedidosEnviados() {
+        return this.borradoresMapper.toListPedidodiarioResponse(this.borradoresRepository.findByEstadoBorradorEnviado());
+    }
+
+    @Override
     public void registroPedidosDiarios() {
         List<PedidoDiarioClientResponse> pedidoDiario = this.borradoresClient.buscarPedidosDiarios();
         List<BorradoresEntity> pedidoDiarioEntity = new ArrayList<>();
@@ -115,7 +120,7 @@ public class BorradoresServiceImpl implements BorradoresService {
     public BorradoresResponse agregarComentario(Integer idBorrador, BorradoresRequest borradoresRequest) {
         Optional<BorradoresEntity> borradoresEntity = this.borradoresRepository.findById(idBorrador);
 
-        if (borradoresEntity.isPresent()){
+        if (borradoresEntity.isPresent()) {
             borradoresEntity.get().setComentario(borradoresRequest.comentario());
 
             return this.borradoresMapper.toBorradoresResponse(this.borradoresRepository.save(borradoresEntity.get()));

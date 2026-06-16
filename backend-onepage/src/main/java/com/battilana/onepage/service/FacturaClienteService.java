@@ -13,7 +13,6 @@ public interface FacturaClienteService {
     List<ResumenCarteraResponse> resumenCarteraPorPeriodo(Integer periodo);
     List<ResumenCarteraResponse> resumenCarteraPorPeriodoYVendedor(Integer periodo, String vendedor);
     List<ResumenCarteraResponse> resumenCarteraPorVendedor(String vendedor);
-    void registrarFacturasDelMes();
-    void registrarFacturasDelMesManual();
+    void registrarFacturasDelMes(int periodo);
 
 }

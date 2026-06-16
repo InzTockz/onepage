@@ -18,7 +18,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class FacturaClienteServiceImpl implements FacturaClienteService {
+public
+class FacturaClienteServiceImpl implements FacturaClienteService {
 
     private final FacturaClienteRepository facturaClienteRepository;
     private final FacturaClienteMapper facturaClienteMapper;
@@ -55,25 +56,43 @@ public class FacturaClienteServiceImpl implements FacturaClienteService {
     }
 
     @Override
-    public void registrarFacturasDelMes() {
+    public void registrarFacturasDelMes(int periodo) {
         log.info("Iniciando registro automatico de facturas");
 
-        Integer anioActual = LocalDate.now().getYear();
+        //int mesSeleccionado = periodo;
+        int anioActual = LocalDate.now().getYear();
 
-        //1. Calcular el siguiente periodo
-        Integer ultimoPeriodo = facturaClienteRepository.obtenerUltimoPeriodo(anioActual);
-        int nuevoPeriodo = ultimoPeriodo == null ? 1 : ultimoPeriodo + 1;
+        // 1. Validación: no permitir periodos futuros del año actual
+        LocalDate hoy = LocalDate.now();
+        LocalDate fechaSeleccionada = LocalDate.of(anioActual, periodo, 1);
+        if (fechaSeleccionada.isAfter(hoy)) {
+            log.warn("No se puede registrar un periodo futuro: {}", periodo);
+            throw new RuntimeException("No se puede registrar un periodo que aun no ha ocurrido");
+        }
 
-        //2. Validar que no exceda los 12 meses
-        if(nuevoPeriodo > 12){
-            log.warn("Ya se registraron los 12 periodos del año. No se realizara el registro.");
+        // 2. Validación: si ya existe ese periodo en el año actual, no hacer nada
+        if (facturaClienteRepository.existePeriodoEnAnio(periodo, anioActual)) {
+            log.warn("El periodo {} del año {} ya fue registrado. No se generara duplicado.",
+                    periodo, anioActual);
             return;
         }
 
-        //3. Obtener facturas desde la API externa
+        // 3. Calcular el ultimo dia del mes seleccionado
+        LocalDate ultimiDiaDelMes = fechaSeleccionada.withDayOfMonth(fechaSeleccionada.lengthOfMonth());
+
+        // 4. Obtener facturas desde la API
         List<FacturasPorCobrarClientResponse> facturas = facturaClienteClientService.buscarFacturasPorCobrar();
 
-        if(facturas.isEmpty()){
+//        Integer ultimoPeriodo = facturaClienteRepository.obtenerUltimoPeriodo(anioActual);
+//        int nuevoPeriodo = ultimoPeriodo == null ? 1 : ultimoPeriodo + 1;
+//
+//        //2. Validar que no exceda los 12 meses
+//        if (nuevoPeriodo > 12) {
+//            log.warn("Ya se registraron los 12 periodos del año. No se realizara el registro.");
+//            return;
+//        }
+
+        if (facturas.isEmpty()) {
             log.warn("No se encontraron facturas para registrar.");
             return;
         }
@@ -93,16 +112,12 @@ public class FacturaClienteServiceImpl implements FacturaClienteService {
                     entity.setSaldo(f.saldo());
                     entity.setVendedor(f.vendedor());
                     entity.setLc(f.lc());
-                    entity.setPeriodo(nuevoPeriodo);
+                    entity.setPeriodo(periodo);
+                    entity.setFechaRegistro(ultimiDiaDelMes);
                     return entity;
                 }).toList();
 
         facturaClienteRepository.saveAll(entities);
-        log.info("Se registraron {} facturas para el periodo {}", entities.size(), nuevoPeriodo);
-    }
-
-    @Override
-    public void registrarFacturasDelMesManual() {
-
+        log.info("Se registraron {} facturas para el periodo {}", entities.size(), ultimiDiaDelMes);
     }
 }

@@ -48,9 +48,9 @@ public class FacturaClienteController {
         return ResponseEntity.status(HttpStatus.OK).body(this.facturaClienteService.resumenCarteraPorVendedor(vendedor));
     }
 
-    @PostMapping("/registro-manual")
-    public ResponseEntity<Void> registrarFacturasDelMes() {
-        this.facturaClienteService.registrarFacturasDelMes();
+    @PostMapping("/registro-facturas/mensual/{periodo}")
+    public ResponseEntity<Void> registrarFacturasDelMes(@PathVariable int periodo) {
+        this.facturaClienteService.registrarFacturasDelMes(periodo);
         return ResponseEntity.ok().build();
     }
 }

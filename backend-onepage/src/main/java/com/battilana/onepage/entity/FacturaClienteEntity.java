@@ -29,7 +29,6 @@ public class FacturaClienteEntity {
     private BigDecimal importe;
     private BigDecimal saldo;
     private String vendedor;
-    @CreationTimestamp
     private LocalDate fechaRegistro; //Año del registro de la factura
     private Integer periodo; //Periodo del registro 1-12 los cuales son numeros del mes
     private BigDecimal lc;

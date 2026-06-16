@@ -25,6 +25,7 @@ public record BorradoresResponse(
         LocalDateTime fechaCreacionPedido,
         LocalDateTime fechaRegistro,
         LocalDateTime fechaLoteGenerado,
+        LocalDateTime fechaLoteEnviado,
         EstadoBorrador estadoBorrador,
         String facturasVencidas,
         Short docTime,

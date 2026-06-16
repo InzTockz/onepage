@@ -26,6 +26,11 @@ public interface BorradoresRepository extends JpaRepository<BorradoresEntity, In
 
     @Query("SELECT b " +
             "FROM BorradoresEntity b " +
+            "WHERE b.estadoBorrador = 'LOTE_ENVIADO'")
+    List<BorradoresEntity> findByEstadoBorradorEnviado();
+
+    @Query("SELECT b " +
+            "FROM BorradoresEntity b " +
             "WHERE b.estadoBorrador = 'LOTE_GENERADO'")
     List<BorradoresEntity> findByEstadoBorradorLoteGenerado();
 }

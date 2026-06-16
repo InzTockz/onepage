@@ -32,6 +32,11 @@ public class BorradoresController {
         return ResponseEntity.status(HttpStatus.OK).body(this.borradoresService.listaPedidosGenerados());
     }
 
+    @GetMapping("/lista/lote-enviado")
+    public ResponseEntity<List<BorradoresResponse>> listaPedidosEnviados(){
+        return ResponseEntity.status(HttpStatus.OK).body(this.borradoresService.listaPedidosEnviados());
+    }
+
     @PostMapping("/registro-pedidos")
     public ResponseEntity<Void> registroPedidosDiarios(){
         this.borradoresService.registroPedidosDiarios();
