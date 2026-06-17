@@ -29,8 +29,8 @@ FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-# Copiar el JAR compilado desde la etapa de build
-COPY --from=build /app/target/*.jar app.jar
+# Copiar SOLO el JAR ejecutable (excluir el plain)
+COPY --from=build /app/target/*-SNAPSHOT.jar app.jar
 
 EXPOSE 8080
 
