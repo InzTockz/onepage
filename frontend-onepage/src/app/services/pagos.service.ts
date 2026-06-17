@@ -6,7 +6,8 @@ import { PagosResponse } from '../models/pagos/pagos-response.model';
   providedIn: 'root',
 })
 export class PagosService {
-  private apiPago = 'http://localhost:8080/api/v1/bancos';
+  // private apiPago = 'http://localhost:8080/api/v1/bancos';
+  private apiPago = '/api/v1/bancos';
 
   constructor(private http: HttpClient) { }
 
