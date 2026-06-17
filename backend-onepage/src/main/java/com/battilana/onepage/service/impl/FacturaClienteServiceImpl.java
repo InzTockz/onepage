@@ -71,26 +71,17 @@ class FacturaClienteServiceImpl implements FacturaClienteService {
         }
 
         // 2. Validación: si ya existe ese periodo en el año actual, no hacer nada
-        if (facturaClienteRepository.existePeriodoEnAnio(periodo, anioActual)) {
-            log.warn("El periodo {} del año {} ya fue registrado. No se generara duplicado.",
-                    periodo, anioActual);
-            return;
-        }
+//        if (facturaClienteRepository.existePeriodoEnAnio(periodo, anioActual)) {
+//            log.warn("El periodo {} del año {} ya fue registrado. No se generara duplicado.",
+//                    periodo, anioActual);
+//            return;
+//        }
 
         // 3. Calcular el ultimo dia del mes seleccionado
         LocalDate ultimiDiaDelMes = fechaSeleccionada.withDayOfMonth(fechaSeleccionada.lengthOfMonth());
 
         // 4. Obtener facturas desde la API
         List<FacturasPorCobrarClientResponse> facturas = facturaClienteClientService.buscarFacturasPorCobrar();
-
-//        Integer ultimoPeriodo = facturaClienteRepository.obtenerUltimoPeriodo(anioActual);
-//        int nuevoPeriodo = ultimoPeriodo == null ? 1 : ultimoPeriodo + 1;
-//
-//        //2. Validar que no exceda los 12 meses
-//        if (nuevoPeriodo > 12) {
-//            log.warn("Ya se registraron los 12 periodos del año. No se realizara el registro.");
-//            return;
-//        }
 
         if (facturas.isEmpty()) {
             log.warn("No se encontraron facturas para registrar.");
@@ -100,24 +91,40 @@ class FacturaClienteServiceImpl implements FacturaClienteService {
         //4. Convertir y asignar el nuevo periodo
         List<FacturaClienteEntity> entities = facturas.stream()
                 .map(f -> {
-                    FacturaClienteEntity entity = new FacturaClienteEntity();
-                    entity.setRuc(f.ruc());
-                    entity.setNombre(f.nombre());
-                    entity.setDocumento(f.documento());
-                    entity.setComprobante(f.comprobante());
-                    entity.setEmision(f.emision());
-                    entity.setVencimiento(f.vencimiento());
-                    entity.setMoneda(f.moneda());
-                    entity.setImporte(f.importe());
-                    entity.setSaldo(f.saldo());
-                    entity.setVendedor(f.vendedor());
-                    entity.setLc(f.lc());
-                    entity.setPeriodo(periodo);
-                    entity.setFechaRegistro(ultimiDiaDelMes);
-                    return entity;
+                    FacturaClienteEntity entity = this.facturaClienteRepository.buscarFacturaPorRucPorPeriodoPorAnio(f.comprobante(), periodo, anioActual);
+                    if (entity != null) {
+                        entity.setNombre(f.nombre());
+                        entity.setDocumento(f.documento());
+                        entity.setComprobante(f.comprobante());
+                        entity.setEmision(f.emision());
+                        entity.setVencimiento(f.vencimiento());
+                        entity.setMoneda(f.moneda());
+                        entity.setImporte(f.importe());
+                        entity.setSaldo(f.saldo());
+                        entity.setVendedor(f.vendedor());
+                        entity.setLc(f.lc());
+                        return entity;
+                    } else {
+                        FacturaClienteEntity entidadNueva = new FacturaClienteEntity();
+                        entidadNueva.setRuc(f.ruc());
+                        entidadNueva.setNombre(f.nombre());
+                        entidadNueva.setDocumento(f.documento());
+                        entidadNueva.setComprobante(f.comprobante());
+                        entidadNueva.setEmision(f.emision());
+                        entidadNueva.setVencimiento(f.vencimiento());
+                        entidadNueva.setMoneda(f.moneda());
+                        entidadNueva.setImporte(f.importe());
+                        entidadNueva.setSaldo(f.saldo());
+                        entidadNueva.setVendedor(f.vendedor());
+                        entidadNueva.setLc(f.lc());
+                        entidadNueva.setPeriodo(periodo);
+                        entidadNueva.setFechaRegistro(ultimiDiaDelMes);
+                        return entidadNueva;
+                    }
                 }).toList();
 
         facturaClienteRepository.saveAll(entities);
         log.info("Se registraron {} facturas para el periodo {}", entities.size(), ultimiDiaDelMes);
+        log.info("Se registraron {} facturas para el periodo {}", entities.size(), periodo);
     }
 }
