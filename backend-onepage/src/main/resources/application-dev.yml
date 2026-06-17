@@ -3,7 +3,7 @@ spring:
   datasource:
     url: "jdbc:mysql://localhost:3306/onepage_db"
     username: "root"
-    password: "mysql"
+    password: ""
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
