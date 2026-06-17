@@ -3,6 +3,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PagosResponse } from '../../models/pagos/pagos-response.model';
 import { PagosService } from '../../services/pagos.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-facturas-canceladas',
@@ -46,7 +47,7 @@ export class FacturasCanceladasComponent implements OnInit {
   archivoSeleccionado: File | null = null;
   cargandoArchivo = signal(false);
 
-  constructor(private pagoService: PagosService) {}
+  constructor(private pagoService: PagosService, private toastService: ToastrService) { }
 
   ngOnInit(): void {
     this.cargarPagos();
@@ -108,11 +109,20 @@ export class FacturasCanceladasComponent implements OnInit {
     this.cargandoArchivo.set(true);
 
     // Aquí conectas tu servicio real de carga
-    setTimeout(() => {
-      this.cargandoArchivo.set(false);
-      this.cerrarModal();
-      this.cargarPagos();
-    }, 2000);
+    this.pagoService.subirArchivoBanco(this.bancoSeleccionadoCarga, this.archivoSeleccionado).subscribe({
+      next: () => {
+        this.cargarPagos();
+        this.toastService.success('Documento cargado', 'Exito')
+        setTimeout(() => {
+          this.cargandoArchivo.set(false);
+          this.cerrarModal();
+        }, 1000);
+      },
+      error: (err) => {
+        this.toastService.error('Documento no se pudo cargar', 'Error')
+        this.cargandoArchivo.set(false);
+      }
+    });
   }
 
   getEstadoClase(estado: string): string {
