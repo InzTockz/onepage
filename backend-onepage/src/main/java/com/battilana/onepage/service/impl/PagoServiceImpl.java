@@ -1,8 +1,10 @@
 package com.battilana.onepage.service.impl;
 
 import com.battilana.onepage.dto.pago.PagoNormalizadoDto;
+import com.battilana.onepage.dto.pago.PagoResponse;
 import com.battilana.onepage.entity.BancoEntity;
 import com.battilana.onepage.entity.PagoEntity;
+import com.battilana.onepage.mappers.PagoMapper;
 import com.battilana.onepage.repository.BancoRepository;
 import com.battilana.onepage.repository.PagoRepository;
 import com.battilana.onepage.service.PagoService;
@@ -31,6 +33,12 @@ public class PagoServiceImpl implements PagoService {
     private final BbvaParser bbvaParser;
     private final BcpParser bcpParser;
     private final ScotiabankParser scotiabankParser;
+    private final PagoMapper pagoMapper;
+
+    @Override
+    public List<PagoResponse> listar() {
+        return this.pagoMapper.toListPagoResponse(this.pagoRepository.findAllByOrderByIdPagoDesc());
+    }
 
     @Override
     @Transactional
