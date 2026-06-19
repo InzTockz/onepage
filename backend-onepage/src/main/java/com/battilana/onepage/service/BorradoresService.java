@@ -13,7 +13,7 @@ public interface BorradoresService {
     List<BorradoresResponse> listaPedidosGenerados();
     List<BorradoresResponse> listaPedidosEnviados();
     void registroPedidosDiarios();
-    void generarLotePedidosDiarios();
+    void generarLotePedidosDiarios(List<BorradoresRequest> borradoresRequests);
     void enviarLotePedidoDiarios();
     BorradoresResponse agregarComentario(Integer idBorrador, BorradoresRequest borradoresRequest);
 }

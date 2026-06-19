@@ -44,8 +44,8 @@ public class BorradoresController {
     }
 
     @PutMapping("/pedidos-diarios/generar-lote")
-    public ResponseEntity<Void> generarLotePedidosDiarios(){
-        this.borradoresService.generarLotePedidosDiarios();
+    public ResponseEntity<Void> generarLotePedidosDiarios(@RequestBody List<BorradoresRequest> borradoresRequests){
+        this.borradoresService.generarLotePedidosDiarios(borradoresRequests);
         return ResponseEntity.ok().build();
     }
 

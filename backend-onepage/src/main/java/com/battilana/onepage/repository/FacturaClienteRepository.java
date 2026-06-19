@@ -110,5 +110,5 @@ public interface FacturaClienteRepository extends JpaRepository<FacturaClienteEn
             "FROM FacturaClienteEntity f " +
             "WHERE f.periodo=:periodo AND YEAR(f.fechaRegistro)=:anio " +
             "AND f.comprobante =:comprobante")
-    FacturaClienteEntity buscarFacturaPorRucPorPeriodoPorAnio(@Param("comprobante") String comprobante, @Param("periodo") int periodo, @Param("anio") int anio);
+    FacturaClienteEntity buscarFacturaPorComprobantePorPeriodoPorAnio(@Param("comprobante") String comprobante, @Param("periodo") int periodo, @Param("anio") int anio);
 }

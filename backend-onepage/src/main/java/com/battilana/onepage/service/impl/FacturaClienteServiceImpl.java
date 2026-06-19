@@ -8,6 +8,7 @@ import com.battilana.onepage.mappers.FacturaClienteMapper;
 import com.battilana.onepage.repository.FacturaClienteRepository;
 import com.battilana.onepage.service.FacturaClienteClientService;
 import com.battilana.onepage.service.FacturaClienteService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -56,6 +57,7 @@ class FacturaClienteServiceImpl implements FacturaClienteService {
     }
 
     @Override
+    @Transactional
     public void registrarFacturasDelMes(int periodo) {
         log.info("Iniciando registro automatico de facturas");
 
@@ -70,15 +72,8 @@ class FacturaClienteServiceImpl implements FacturaClienteService {
             throw new RuntimeException("No se puede registrar un periodo que aun no ha ocurrido");
         }
 
-        // 2. Validación: si ya existe ese periodo en el año actual, no hacer nada
-//        if (facturaClienteRepository.existePeriodoEnAnio(periodo, anioActual)) {
-//            log.warn("El periodo {} del año {} ya fue registrado. No se generara duplicado.",
-//                    periodo, anioActual);
-//            return;
-//        }
-
         // 3. Calcular el ultimo dia del mes seleccionado
-        LocalDate ultimiDiaDelMes = fechaSeleccionada.withDayOfMonth(fechaSeleccionada.lengthOfMonth());
+        LocalDate ultimoDiaDelMes = fechaSeleccionada.withDayOfMonth(fechaSeleccionada.lengthOfMonth());
 
         // 4. Obtener facturas desde la API
         List<FacturasPorCobrarClientResponse> facturas = facturaClienteClientService.buscarFacturasPorCobrar();
@@ -91,7 +86,7 @@ class FacturaClienteServiceImpl implements FacturaClienteService {
         //4. Convertir y asignar el nuevo periodo
         List<FacturaClienteEntity> entities = facturas.stream()
                 .map(f -> {
-                    FacturaClienteEntity entity = this.facturaClienteRepository.buscarFacturaPorRucPorPeriodoPorAnio(f.comprobante(), periodo, anioActual);
+                    FacturaClienteEntity entity = this.facturaClienteRepository.buscarFacturaPorComprobantePorPeriodoPorAnio(f.comprobante(), periodo, anioActual);
                     if (entity != null) {
                         entity.setNombre(f.nombre());
                         entity.setDocumento(f.documento());
@@ -118,13 +113,13 @@ class FacturaClienteServiceImpl implements FacturaClienteService {
                         entidadNueva.setVendedor(f.vendedor());
                         entidadNueva.setLc(f.lc());
                         entidadNueva.setPeriodo(periodo);
-                        entidadNueva.setFechaRegistro(ultimiDiaDelMes);
+                        entidadNueva.setFechaRegistro(ultimoDiaDelMes);
                         return entidadNueva;
                     }
                 }).toList();
 
         facturaClienteRepository.saveAll(entities);
-        log.info("Se registraron {} facturas para el periodo {}", entities.size(), ultimiDiaDelMes);
+        log.info("Se registraron {} facturas para el periodo {}", entities.size(), ultimoDiaDelMes);
         log.info("Se registraron {} facturas para el periodo {}", entities.size(), periodo);
     }
 }

@@ -56,49 +56,53 @@ public class BorradoresServiceImpl implements BorradoresService {
     @Override
     public void registroPedidosDiarios() {
         List<PedidoDiarioClientResponse> pedidoDiario = this.borradoresClient.buscarPedidosDiarios();
-        List<BorradoresEntity> pedidoDiarioEntity = new ArrayList<>();
+//        List<BorradoresEntity> pedidoDiarioEntity = new ArrayList<>();
 
-        for (PedidoDiarioClientResponse p : pedidoDiario) {
-            BorradoresEntity pd = this.borradoresRepository.findByDocEntry(p.docEntry());
-            if (pd == null) {
-                pd = new BorradoresEntity();
-                pd.setDocEntry(p.docEntry());
-                pd.setCodCliente(p.cardCode());
-                pd.setNombre(p.cardName());
-                pd.setEstadoBorrador(EstadoBorrador.PEDIDO_REGISTRADO);
-                pd.setComentario("");
-                actualizarCampos(pd, p);
-                pedidoDiarioEntity.add(pd);
-            } else if (pd.getEstadoBorrador() == EstadoBorrador.PEDIDO_REGISTRADO) {
-                actualizarCampos(pd, p);
-                pedidoDiarioEntity.add(pd);
-            }
-        }
+        List<BorradoresEntity> pedidoDiarioEntity = pedidoDiario.stream()
+                .map(
+                        p -> {
+                            BorradoresEntity b = this.borradoresRepository.findByDocEntry(p.docEntry());
+                            if (b == null) {
+                                BorradoresEntity bNew = new BorradoresEntity();
+                                bNew.setDocEntry(p.docEntry());
+                                bNew.setCodCliente(p.cardCode());
+                                bNew.setNombre(p.cardName());
+                                bNew.setEstadoBorrador(EstadoBorrador.PEDIDO_REGISTRADO);
+                                bNew.setComentario("");
+                                actualizarCampos(bNew, p);
+                                return bNew;
 
+                            } else {
+                                b.setEstadoBorrador(EstadoBorrador.PEDIDO_REGISTRADO);
+                                actualizarCampos(b, p);
+                                return b;
+                            }
+                        }
+                ).toList();
+        log.info("La lista de los pedidosDiarioEntity son: {}", pedidoDiario.size());
         this.borradoresRepository.saveAll(pedidoDiarioEntity);
-
-        log.info("Sincronizacion completada. Procesados {}", pedidoDiarioEntity.size());
     }
 
     @Override
-    public void generarLotePedidosDiarios() {
+    public void generarLotePedidosDiarios(List<BorradoresRequest> borradoresRequests) {
         List<BorradoresEntity> actualizarBorradores = new ArrayList<>();
-        List<BorradoresEntity> borradores = this.borradoresRepository.findByEstadoBorradorRegistrado();
+//        List<BorradoresEntity> borradores = this.borradoresRepository.findByEstadoBorradorRegistrado();
 
-        for (BorradoresEntity b : borradores) {
-            List<FacturasPorCobrarClientResponse> listadoFacturas = this.facturaClienteClientService.buscarFacturasPorCobrarPorCliente(b.getCodCliente());
-            b.setEstadoBorrador(EstadoBorrador.LOTE_GENERADO);
-            b.setFechaLoteGenerado(LocalDateTime.now());
+        for (BorradoresRequest b : borradoresRequests) {
+            BorradoresEntity borradoresEntity = this.borradoresRepository.findByDocEntry(b.docEntry());
+
+            List<FacturasPorCobrarClientResponse> listadoFacturas = this.facturaClienteClientService.buscarFacturasPorCobrarPorCliente(b.codCliente());
+            borradoresEntity.setEstadoBorrador(EstadoBorrador.LOTE_GENERADO);
+            borradoresEntity.setFechaLoteGenerado(LocalDateTime.now());
             LocalDate hoy = LocalDate.now();
             String facturas = listadoFacturas.stream()
                     .filter(f -> {
                         LocalDate vencimiento = LocalDate.parse(f.vencimiento());
                         return vencimiento.isBefore(hoy);
                     }).map(FacturasPorCobrarClientResponse::comprobante).collect(Collectors.joining(" | "));
-            b.setFacturasVencidas(facturas);
-            actualizarBorradores.add(b);
+            borradoresEntity.setFacturasVencidas(facturas);
+            actualizarBorradores.add(borradoresEntity);
         }
-
         this.borradoresRepository.saveAll(actualizarBorradores);
         log.info("Comentario actualizados: {}", actualizarBorradores.size());
     }
