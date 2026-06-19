@@ -38,8 +38,8 @@ export class BorradoresService {
     return this.http.post<void>(`${this.apiBorrador}/registro-pedidos`, null);
   }
 
-  generarLote(): Observable<void> {
-    return this.http.put<void>(`${this.apiBorrador}/pedidos-diarios/generar-lote`, null);
+  generarLote(borradoresRequest: LotePedido[]): Observable<void> {
+    return this.http.put<void>(`${this.apiBorrador}/pedidos-diarios/generar-lote`, borradoresRequest);
   }
 
   enviarLote(): Observable<void> {

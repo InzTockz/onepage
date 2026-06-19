@@ -21,6 +21,7 @@ export class PedidoDiarioComponent implements OnInit, AfterViewInit, OnDestroy {
 
   enCargaActualizarPedidos: boolean = false;
   enCarga: boolean = false;
+  seleccionados = new Set<number>();
   lotePedidos: LotePedido[] = [];
   lotePedido!: LotePedido;
   page = 1;
@@ -89,14 +90,15 @@ export class PedidoDiarioComponent implements OnInit, AfterViewInit, OnDestroy {
       codCliente: p.codCliente,
       comentario: p.comentario || ''
     }))
-    this.borradoresService.generarLote().subscribe({
+    this.borradoresService.generarLote(this.pedidosSeleccionados).subscribe({
       next: () => {
-        console.log('Lote generado con exito')
+        this.toastr.success('Lote generado correctamente', 'Éxito');
         this.showPedidosDiarios();
+        this.seleccionados.clear()
         this.enCarga = false;
       },
       error: (err) => {
-        console.error('Error generando lote: ', err);
+        this.toastr.error('Error al generar lote', 'Error');
         this.enCarga = false;
       }
     })
@@ -109,7 +111,6 @@ export class PedidoDiarioComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   guardarComentario(pd: LotePedido) {
-
     this.borradoresService.agregarComentario(pd.idLotePedidos, pd).subscribe({
       next: () => {
         console.log(`Comentario guardado para ${pd.codCliente}`);
@@ -132,6 +133,36 @@ export class PedidoDiarioComponent implements OnInit, AfterViewInit, OnDestroy {
 
   get lineaCreditoUtilizada() {
     return 0
+  }
+
+  get todosSeleccionados(): boolean {
+    const datos = this.paginatedData();
+    return datos.length > 0 && datos.every(pd => this.seleccionados.has(pd.idLotePedidos));
+  }
+
+  get algunosSeleccionados(): boolean {
+    const datos = this.paginatedData();
+    return datos.some(pd => this.seleccionados.has(pd.idLotePedidos)) && !this.todosSeleccionados;
+  }
+
+  toggleTodos() {
+    if (this.todosSeleccionados) {
+      this.paginatedData().forEach(pd => this.seleccionados.delete(pd.idLotePedidos));
+    } else {
+      this.paginatedData().forEach(pd => this.seleccionados.add(pd.idLotePedidos));
+    }
+  }
+
+  toggleUno(id: number) {
+    if (this.seleccionados.has(id)) {
+      this.seleccionados.delete(id);
+    } else {
+      this.seleccionados.add(id);
+    }
+  }
+
+  get pedidosSeleccionados(): LotePedido[] {
+    return this.lotePedidos.filter(pd => this.seleccionados.has(pd.idLotePedidos));
   }
 
   formatoHora(docTime: number): string {
