@@ -157,53 +157,89 @@
 
           <!-- Card footer -->
           <div class="px-4 py-2.5 border-t border-slate-100 space-y-1.5">
-            <!-- Comentario o "Sin deuda vencida" -->
-            @if (pd.comentario) {
-              <div class="flex items-start gap-1.5">
-                <svg
-                  class="w-3.5 h-3.5 text-yellow-500 shrink-0 mt-0.5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-                </svg>
-                <span class="text-xs text-yellow-700 leading-relaxed">{{ pd.comentario }}</span>
-              </div>
+            @if (pd.lineaCredito == 0) {
+              <!-- ===== CONTADO: únicamente el comentario ===== -->
+              @if (pd.comentario) {
+                <div class="flex items-start gap-1.5">
+                  <svg
+                    class="w-3.5 h-3.5 text-yellow-500 shrink-0 mt-0.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                  </svg>
+                  <span class="text-xs text-yellow-700 leading-relaxed">{{ pd.comentario }}</span>
+                </div>
+              } @else {
+                <div class="flex items-center gap-1.5">
+                  <svg
+                    class="w-3.5 h-3.5 text-green-500"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                  <span class="text-xs text-green-600 font-medium">Pago al contado</span>
+                </div>
+              }
             } @else {
-              <div class="flex items-center gap-1.5">
-                <svg
-                  class="w-3.5 h-3.5 text-green-500"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M20 6L9 17l-5-5" />
-                </svg>
-                <span class="text-xs text-green-600 font-medium">Sin deuda vencida</span>
-              </div>
-            }
+              <!-- ===== CRÉDITO: comentario (si hay) + facturas vencidas (si hay) ===== -->
 
-            <!-- Facturas vencidas (solo si hay) -->
-            @if (pd.nroFacturasVencidas > 0) {
-              <div class="flex items-start gap-1.5">
-                <svg
-                  class="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path
-                    d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"
-                  />
-                </svg>
-                <span class="text-xs text-red-600 leading-relaxed">
-                  <span class="font-semibold">Vencidas:</span> {{ pd.facturasVencidas }}
-                </span>
-              </div>
+              <!-- Comentario: solo si existe -->
+              @if (pd.comentario) {
+                <div class="flex items-start gap-1.5">
+                  <svg
+                    class="w-3.5 h-3.5 text-yellow-500 shrink-0 mt-0.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                  </svg>
+                  <span class="text-xs text-yellow-700 leading-relaxed">{{ pd.comentario }}</span>
+                </div>
+              }
+
+              <!-- Facturas vencidas: solo si tiene -->
+              @if (pd.nroFacturasVencidas > 0) {
+                <div class="flex items-start gap-1.5">
+                  <svg
+                    class="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"
+                    />
+                  </svg>
+                  <span class="text-xs text-red-600 leading-relaxed">
+                    <span class="font-semibold">Vencidas:</span> {{ pd.facturasVencidas }}
+                  </span>
+                </div>
+              }
+
+              <!-- Si NO hay comentario NI facturas vencidas → "Sin deuda vencida" -->
+              @if (!pd.comentario && pd.nroFacturasVencidas === 0) {
+                <div class="flex items-center gap-1.5">
+                  <svg
+                    class="w-3.5 h-3.5 text-green-500"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                  <span class="text-xs text-green-600 font-medium">Sin deuda vencida</span>
+                </div>
+              }
             }
           </div>
         </div>

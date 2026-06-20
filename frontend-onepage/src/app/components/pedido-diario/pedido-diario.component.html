@@ -85,7 +85,7 @@
                 [checked]="todosSeleccionados"
                 [indeterminate]="algunosSeleccionados"
                 (change)="toggleTodos()"
-                class="w-3.5 h-3.5 rounded border-slate-300 text-indigo-600 focus:ring-0 focus:ring-offset-0 cursor-pointer"
+                class="w-3.5 h-3.5 rounded border-slate-300 text-indigo-600 focus:ring-0 focus:ring-offset-0"
               />
             </label>
           </th>
@@ -129,7 +129,7 @@
                   type="checkbox"
                   [checked]="seleccionados.has(pd.idLotePedidos)"
                   (change)="toggleUno(pd.idLotePedidos)"
-                  class="w-4 h-3.5 rounded border-slate-300 text-indigo-600 focus:ring-0 focus:ring-offset-0 cursor-pointer"
+                  class="w-4 h-3.5 rounded border-slate-300 text-indigo-600 focus:ring-0 focus:ring-offset-0"
                 />
               </label>
             </td>
