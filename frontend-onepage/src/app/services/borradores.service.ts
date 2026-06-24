@@ -9,8 +9,8 @@ import { LotePedido } from '../models/borrador/lote-pedido.model';
 })
 export class BorradoresService {
 
-  private apiBorrador: string = "http://localhost:8080/api/v1/borradores"
-  // private apiBorrador: string = "/api/v1/borradores"
+  // private apiBorrador: string = "http://localhost:8080/api/v1/borradores"
+  private apiBorrador: string = "/api/v1/borradores"
 
   constructor(private http: HttpClient) { };
 
