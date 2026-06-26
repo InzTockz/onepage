@@ -17,6 +17,13 @@ public class BcpParser implements BancoParser{
     // 10: Interés | 11: Comisiones | 12: Portes | 13: Protesto
 
     @Override
+    public boolean coincideFormato(Workbook workbook) {
+        Sheet hoja = workbook.getSheetAt(0);
+        // Huella BCP: cabecera "Letra / Factura" junto con "Aceptante" (misma fila)
+        return CeldaUtil.existeFilaConTokens(hoja, 15, "Letra / Factura", "Aceptante");
+    }
+
+    @Override
     public List<PagoNormalizadoDto> parsear(Workbook workbook) {
         Sheet hoja = workbook.getSheetAt(0);
         List<PagoNormalizadoDto> resultado = new ArrayList<>();

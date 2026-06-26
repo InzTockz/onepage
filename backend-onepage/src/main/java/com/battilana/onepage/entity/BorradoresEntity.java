@@ -39,6 +39,7 @@ public class BorradoresEntity {
     private LocalDateTime fechaLoteEnviado; //fecha en la que se envio el pedido por medio de whatsapp
     @Enumerated(EnumType.STRING)
     private EstadoBorrador estadoBorrador;
+    private boolean estado;
     @Column(name = "facturas_vencidas", length = 15000)
     private String facturasVencidas; // SE LISTA EN CADENA LAS FACTURAS QUE ESTAN VENCIDAS
     private Integer docTime; //LA HORA EN LA QUE FUE CREADO EL PEDIDO

@@ -18,6 +18,15 @@ public class BbvaParser implements BancoParser {
     // 4: Docs. Ingres. | 5: Docs. Descarg | 6: Interés | 7: Comisión | 8: Gastos | 9: Sit.
 
     @Override
+    public boolean coincideFormato(Workbook workbook) {
+        Sheet hoja = workbook.getSheetAt(0);
+        // Huella BBVA: cabecera con "F. Venc" + preámbulo "Fecha Operación"
+        // Huella BBVA: cabecera con "F. Venc" + preámbulo "Fecha Operación"
+        return CeldaUtil.existeFilaConTokens(hoja, 25, "F. Venc")
+                && CeldaUtil.existeFilaConTokens(hoja, 25, "Fecha Operación");
+    }
+
+    @Override
     public List<PagoNormalizadoDto> parsear(Workbook workbook) {
         Sheet hoja = workbook.getSheetAt(0);
         List<PagoNormalizadoDto> resultado = new ArrayList<>();

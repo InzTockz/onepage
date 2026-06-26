@@ -16,21 +16,25 @@ public interface BorradoresRepository extends JpaRepository<BorradoresEntity, In
 
     @Query("SELECT b " +
             "FROM BorradoresEntity  b " +
-            "WHERE b.estadoBorrador in ('PEDIDO_REGISTRADO','LOTE_GENERADO')")
+            "WHERE b.estadoBorrador in ('PEDIDO_REGISTRADO','LOTE_GENERADO') " +
+            "AND b.estado = true")
     List<BorradoresEntity> findByEstadoBorrador();
 
     @Query("SELECT  b " +
             "FROM BorradoresEntity b " +
-            "WHERE b.estadoBorrador = 'PEDIDO_REGISTRADO'")
+            "WHERE b.estadoBorrador = 'PEDIDO_REGISTRADO' " +
+            "AND b.estado = true")
     List<BorradoresEntity> findByEstadoBorradorRegistrado();
 
     @Query("SELECT b " +
             "FROM BorradoresEntity b " +
-            "WHERE b.estadoBorrador = 'LOTE_ENVIADO'")
+            "WHERE b.estadoBorrador = 'LOTE_ENVIADO' " +
+            "AND b.estado = true")
     List<BorradoresEntity> findByEstadoBorradorEnviado();
 
     @Query("SELECT b " +
             "FROM BorradoresEntity b " +
-            "WHERE b.estadoBorrador = 'LOTE_GENERADO'")
+            "WHERE b.estadoBorrador = 'LOTE_GENERADO' " +
+            "AND b.estado = true")
     List<BorradoresEntity> findByEstadoBorradorLoteGenerado();
 }

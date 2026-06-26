@@ -3,6 +3,7 @@ package com.battilana.onepage.util.parser;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -66,5 +67,39 @@ public class CeldaUtil {
         if (texto.isEmpty()) return null;
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern(formato);
         return LocalDate.parse(texto, fmt);
+    }
+
+    /**
+     * Devuelve true si, dentro de las primeras {@code maxFilas} filas, existe UNA fila
+     * cuyo texto contenga TODOS los tokens indicados. Sirve de "huella" del formato.
+     */
+    public static boolean existeFilaConTokens(Sheet hoja, int maxFilas, String... tokens) {
+        int limite = Math.min(maxFilas, hoja.getLastRowNum());
+        for (int i = 0; i <= limite; i++) {
+            Row fila = hoja.getRow(i);
+            if (fila == null) continue;
+            String textoFila = textoDeFila(fila);
+            boolean contieneTodos = true;
+            for (String token : tokens) {
+                if (!textoFila.contains(token)) {
+                    contieneTodos = false;
+                    break;
+                }
+            }
+            if (contieneTodos) return true;
+        }
+        return false;
+    }
+
+    private static String textoDeFila(Row fila) {
+        StringBuilder sb = new StringBuilder();
+        int ultima = fila.getLastCellNum();            // -1 si la fila está vacía
+        for (int c = 0; c < ultima; c++) {
+            Cell celda = fila.getCell(c);
+            if (celda != null && celda.getCellType() == CellType.STRING) {
+                sb.append(celda.getStringCellValue().trim()).append(" | ");
+            }
+        }
+        return sb.toString();
     }
 }

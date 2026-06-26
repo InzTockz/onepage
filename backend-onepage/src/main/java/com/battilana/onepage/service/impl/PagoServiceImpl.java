@@ -4,6 +4,7 @@ import com.battilana.onepage.dto.pago.PagoNormalizadoDto;
 import com.battilana.onepage.dto.pago.PagoResponse;
 import com.battilana.onepage.entity.BancoEntity;
 import com.battilana.onepage.entity.PagoEntity;
+import com.battilana.onepage.exception.FormatoArchivoNoValidoException;
 import com.battilana.onepage.mappers.PagoMapper;
 import com.battilana.onepage.repository.BancoRepository;
 import com.battilana.onepage.repository.PagoRepository;
@@ -55,7 +56,18 @@ public class PagoServiceImpl implements PagoService {
         // 3. Leer el Excel con Apache POI
         List<PagoNormalizadoDto> pagosNormalizados;
         try (Workbook workbook = WorkbookFactory.create(archivo.getInputStream())) {
+            if (!parser.coincideFormato(workbook)){
+                String bancoReal = detectarBanco(workbook);
+                String detalle = (bancoReal != null)
+                        ? " El archivo parece pertenecer a " + bancoReal + "."
+                        : " El archivo no coincide con el formato de ningún banco reconocido.";
+                throw new FormatoArchivoNoValidoException(
+                        "El archivo '" + archivo.getOriginalFilename() +
+                                "' no corresponde al formato del banco " + codigoBanco + "." + detalle);
+            }
             pagosNormalizados = parser.parsear(workbook);
+        } catch (FormatoArchivoNoValidoException e) {
+            throw e;  // error de validación: no lo envolvemos como error de lectura
         } catch (Exception e) {
             throw new RuntimeException("Error al leer el archivo Excel: " + e.getMessage(), e);
         }
@@ -102,5 +114,12 @@ public class PagoServiceImpl implements PagoService {
             case "SCOTIA" -> scotiabankParser;
             default -> throw new RuntimeException("Parser no implementado para: " + codigoBanco);
         };
+    }
+
+    private String detectarBanco (Workbook workbook){
+        if (bbvaParser.coincideFormato(workbook)) return "BBVA";
+        if (bcpParser.coincideFormato(workbook)) return "BCP";
+        if (scotiabankParser.coincideFormato(workbook)) return "SCOTIA";
+        return null;
     }
 }

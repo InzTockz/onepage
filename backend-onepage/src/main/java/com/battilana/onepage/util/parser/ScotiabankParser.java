@@ -15,6 +15,13 @@ public class ScotiabankParser implements BancoParser{
     // 4: Importe | 5: Situación | 6: Forma de Pago | 7: Descripción | 8: Documento proveedor
 
     @Override
+    public boolean coincideFormato(Workbook workbook) {
+        Sheet hoja = workbook.getSheetAt(0);
+        // Huella Scotiabank: columnas propias "Pagador/Adquiriente" + "Forma de Pago"
+        return CeldaUtil.existeFilaConTokens(hoja, 15, "Pagador", "Forma de Pago");
+    }
+
+    @Override
     public List<PagoNormalizadoDto> parsear(Workbook workbook) {
         Sheet hoja = workbook.getSheetAt(0);
         List<PagoNormalizadoDto> resultado = new ArrayList<>();

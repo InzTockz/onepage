@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -56,31 +57,42 @@ public class BorradoresServiceImpl implements BorradoresService {
     @Override
     public void registroPedidosDiarios() {
         List<PedidoDiarioClientResponse> pedidoDiario = this.borradoresClient.buscarPedidosDiarios();
-//        List<BorradoresEntity> pedidoDiarioEntity = new ArrayList<>();
+        List<BorradoresEntity> aRegistrar = new ArrayList<>();
 
-        List<BorradoresEntity> pedidoDiarioEntity = pedidoDiario.stream()
-                .map(
-                        p -> {
-                            BorradoresEntity b = this.borradoresRepository.findByDocEntry(p.docEntry());
-                            if (b == null) {
-                                BorradoresEntity bNew = new BorradoresEntity();
-                                bNew.setDocEntry(p.docEntry());
-                                bNew.setCodCliente(p.cardCode());
-                                bNew.setNombre(p.cardName());
-                                bNew.setEstadoBorrador(EstadoBorrador.PEDIDO_REGISTRADO);
-                                bNew.setComentario("");
-                                actualizarCampos(bNew, p);
-                                return bNew;
+        // PASE 1 — importar (O/W): insertar nuevos / actualizar existentes
+        for (PedidoDiarioClientResponse p : pedidoDiario) {
+            BorradoresEntity b = this.borradoresRepository.findByDocEntry(p.docEntry());
+            if (b == null) {
+                BorradoresEntity bNew = new BorradoresEntity();
+                bNew.setDocEntry(p.docEntry());
+                bNew.setCodCliente(p.cardCode());
+                bNew.setNombre(p.cardName());
+                bNew.setEstadoBorrador(EstadoBorrador.PEDIDO_REGISTRADO);
+                bNew.setComentario("");
+                bNew.setEstado(true);
+                actualizarCampos(bNew, p);
+                aRegistrar.add(bNew);
+            } else {
+                b.setEstadoBorrador(EstadoBorrador.PEDIDO_REGISTRADO);
+                b.setEstado(true);
+                actualizarCampos(b, p);
+                aRegistrar.add(b);
+            }
+        }
+        this.borradoresRepository.saveAll(aRegistrar);
 
-                            } else {
-                                b.setEstadoBorrador(EstadoBorrador.PEDIDO_REGISTRADO);
-                                actualizarCampos(b, p);
-                                return b;
-                            }
-                        }
-                ).toList();
+        // PASE 2 — anular los registrados que en SAP estén O/C
+        List<BorradoresEntity> aAnular = new ArrayList<>();
+        for (BorradoresEntity pr : this.borradoresRepository.findByEstadoBorradorRegistrado()) {
+            BorradoresClientResponse bc = this.borradoresClient.buscarBorradorPorDocEntry(pr.getDocEntry());
+            if (bc != null && ("O".equalsIgnoreCase(bc.docStatus()) && "C".equalsIgnoreCase(bc.wddStatus()))) {
+                pr.setEstadoBorrador(EstadoBorrador.ANULADO);
+                pr.setEstado(false);
+                aAnular.add(pr);
+            }
+        }
         log.info("La lista de los pedidosDiarioEntity son: {}", pedidoDiario.size());
-        this.borradoresRepository.saveAll(pedidoDiarioEntity);
+        this.borradoresRepository.saveAll(aAnular);
     }
 
     @Override
