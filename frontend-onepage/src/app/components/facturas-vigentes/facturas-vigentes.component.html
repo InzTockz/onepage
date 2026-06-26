@@ -1,12 +1,20 @@
 <div class="w-full relative">
   <!-- Header -->
   <div class="flex items-center justify-between mb-5">
-    <div>
-      <h2 class="text-base font-bold text-blue-900 uppercase tracking-widest">Bitácora de pagos</h2>
-      <p class="text-xs text-gray-500 mt-0.5">Registro consolidado de pagos por banco</p>
+    <div class="flex items-center gap-2">
+      <div>
+        <h2 class="text-base font-bold text-blue-900 uppercase tracking-widest">
+          Facturas Vigentes
+        </h2>
+        <p class="text-xs text-gray-500 mt-0.5">Facturas vigentes por pagar por banco</p>
+      </div>
+      <span
+        class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200"
+      >
+        Vista demostrativa
+      </span>
     </div>
 
-    <!-- Botón flotante de nuevo ingreso -->
     <button
       (click)="abrirModal()"
       class="flex items-center gap-2 px-4 py-2.5 bg-blue-900 text-white text-xs font-semibold rounded-xl hover:bg-blue-800 active:bg-blue-950 transition-all shadow-md hover:shadow-lg"
@@ -31,19 +39,15 @@
               : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100'
           "
         >
-          <!-- Ícono del banco (círculo con inicial) -->
-          <!-- Logo del banco -->
           <span
             class="w-15 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shrink-0 overflow-hidden p-1"
           >
             <img [src]="b.logo" [alt]="b.codigo" class="w-full h-full object-contain" />
           </span>
-          <!-- <span class="uppercase tracking-wider">{{ b.codigo }}</span> -->
         </button>
       }
     </div>
 
-    <!-- Resumen del banco activo -->
     <div class="px-5 py-3 bg-gray-50/40 flex items-center justify-between">
       <div>
         <p class="text-[10px] text-gray-500 uppercase tracking-widest">Banco activo</p>
@@ -91,8 +95,10 @@
           <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
           <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
         </svg>
-        <p class="text-sm font-medium">Sin registros para {{ bancoSeleccionadoData.codigo }}</p>
-        <p class="text-xs mt-1 text-gray-500">Carga un archivo Excel para comenzar</p>
+        <p class="text-sm font-medium">
+          Sin facturas pendientes para {{ bancoSeleccionadoData.codigo }}
+        </p>
+        <p class="text-xs mt-1 text-gray-500">No hay facturas vigentes por pagar</p>
       </div>
     } @else {
       <div class="overflow-x-auto">
@@ -134,7 +140,7 @@
                   <span
                     class="px-2 py-0.5 rounded-full text-[10px] font-semibold"
                     [class]="getEstadoClase(p.estado)"
-                    >{{ p.estado === 'CANCELADO' ? 'PAGADO' : p.estado }}</span
+                    >{{ p.estado }}</span
                   >
                 </td>
               </tr>
@@ -220,7 +226,6 @@
         class="bg-white rounded-2xl shadow-2xl w-full max-w-md"
         (click)="$event.stopPropagation()"
       >
-        <!-- Header del modal -->
         <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
           <div>
             <h3 class="text-sm font-bold text-blue-900 uppercase tracking-widest">Nuevo ingreso</h3>
@@ -242,13 +247,11 @@
           </button>
         </div>
 
-        <!-- Body del modal -->
         <div class="px-6 py-5 space-y-4">
-          <!-- Selector de banco -->
           <div>
-            <label class="text-[10px] font-bold text-gray-600 uppercase tracking-wider block mb-2">
-              Banco
-            </label>
+            <label class="text-[10px] font-bold text-gray-600 uppercase tracking-wider block mb-2"
+              >Banco</label
+            >
             <select
               [(ngModel)]="bancoSeleccionadoCarga"
               class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-xs rounded-lg px-3 py-2.5 cursor-pointer outline-none hover:border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
@@ -260,11 +263,10 @@
             </select>
           </div>
 
-          <!-- Selector de archivo -->
           <div>
-            <label class="text-[10px] font-bold text-gray-600 uppercase tracking-wider block mb-2">
-              Archivo Excel
-            </label>
+            <label class="text-[10px] font-bold text-gray-600 uppercase tracking-wider block mb-2"
+              >Archivo Excel</label
+            >
             <label class="block cursor-pointer">
               <input
                 type="file"
@@ -308,9 +310,26 @@
               </div>
             </label>
           </div>
+
+          @if (errorCarga()) {
+            <div
+              class="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5"
+            >
+              <svg
+                class="w-4 h-4 text-red-500 shrink-0 mt-0.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v4M12 16h.01" />
+              </svg>
+              <p class="text-xs text-red-700 leading-snug">{{ errorCarga() }}</p>
+            </div>
+          }
         </div>
 
-        <!-- Footer del modal -->
         <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-end gap-2">
           <button
             (click)="cerrarModal()"
