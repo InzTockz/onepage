@@ -3,8 +3,8 @@ package com.battilana.onepage.dto.facturas;
 import java.math.BigDecimal;
 
 public record FacturasPorCobrarClientResponse(
-        String ruc,
-        String nombre,
+        String ruc, //RUC DEL CLIENTE
+        String nombre, //RAZON SOCIAL
         Integer documento,
         String comprobante,
         String emision,
