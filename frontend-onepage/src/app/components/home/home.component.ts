@@ -26,6 +26,7 @@ import type { EChartsCoreOption } from 'echarts/core';
 import { ResumenCarteraSap } from '../../models/factura-cliente/resumen-cartera-sap.model';
 import { ClienteDeudor } from '../../models/cliente/cliente-deudor.model';
 import { ToastrService } from 'ngx-toastr';
+import { ReportesService } from '../../services/reportes.service';
 echarts.use([
   BarChart,
   LineChart,
@@ -58,6 +59,9 @@ export class HomeComponent implements OnInit {
   selectConsultor: boolean = false;
   selectClientes: boolean = false;
   checkVistaGeneral: boolean = false;
+  descargandoExcel: boolean = false;
+  descargandoPdf: boolean = false;
+  descargandoExcelAntiguedad: boolean = false;
   activeTab = signal(0);
 
   /* Arreglos */
@@ -143,7 +147,8 @@ export class HomeComponent implements OnInit {
     private vendedorService: VendedorService,
     private facturaClienteService: FacturaClienteService,
     private facturaService: FacturaService,
-    private toastrService: ToastrService
+    private toastrService: ToastrService,
+    private reportesService: ReportesService
   ) { }
 
   ngOnInit(): void {
@@ -745,6 +750,7 @@ export class HomeComponent implements OnInit {
   getFacturasPorCobrarCliente(ruc: string) {
     return this.facturaClienteService.getFacturasPorCobrarCliente(ruc).subscribe((data) => {
       this.facturasPorCobrar = data;
+      this.expandirTodosLosClientes();     // 👈
     });
   }
 
@@ -753,6 +759,7 @@ export class HomeComponent implements OnInit {
       .getFacturasPorCobrarPorVendedorYCliente(slpCode, ruc)
       .subscribe((data) => {
         this.facturasPorCobrar = data;
+        this.expandirTodosLosClientes();     // 👈
       });
   }
 
@@ -819,7 +826,10 @@ export class HomeComponent implements OnInit {
   getFacturasPorCobrarVendedor(slpCode: number) {
     return this.facturaClienteService
       .getFacturasPorCobrarVendedor(slpCode)
-      .subscribe((data) => (this.facturasPorCobrar = data));
+      .subscribe((data) => {
+        this.facturasPorCobrar = data;
+        this.expandirTodosLosClientes();   // 👈 todo expandido
+      });
   }
 
   /** Seccion de clientes */
@@ -904,10 +914,59 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  /** Marca todos los clientes como expandidos según las facturas cargadas. */
+  private expandirTodosLosClientes(): void {
+    this.clientesExpandidos = new Set(this.facturasPorCobrar.map((f) => f.nombre));
+  }
+
   /** Metodo de los componentes en HTML */
   changeStatusSelect() {
     this.checkVistaGeneral = !this.checkVistaGeneral;
     this.consultorSeleccionada = '-1';
     this.clienteSeleccionado = '-1';
+  }
+
+  exportarExcel() {
+    const slpCode = Number(this.consultorSeleccionada);
+    this.descargandoExcel = true;
+
+    this.reportesService.facturasPorVendedor(slpCode).subscribe({
+      next: (blob) => {
+        this.triggerDownload(blob, `reporte_${slpCode}.xlsx`);
+        this.descargandoExcel = false;
+      },
+      error: () => {
+        this.toastrService.error('No se pudo exportar el Excel', 'Error');
+        this.descargandoExcel = false;
+      }
+    })
+  }
+
+  exportarPdf() {
+
+  }
+
+  exportarExcelAntiguedad(): void {
+    this.descargandoExcelAntiguedad = true;
+
+    this.reportesService.reporteGeneralDeFacturas().subscribe({
+      next: (blob) => {
+        this.triggerDownload(blob, `antiguedad_saldos.xlsx`);
+        this.descargandoExcelAntiguedad = false;
+      },
+      error: () => {
+        this.toastrService.error('No se pudo exportar el Excel', 'Error');
+        this.descargandoExcelAntiguedad = false;
+      }
+    });
+  }
+
+  private triggerDownload(blob: Blob, filename: string): void {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 }
