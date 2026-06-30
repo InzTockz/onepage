@@ -13,6 +13,10 @@ spring:
     properties:
       hibernate:
         format_sql: false
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 25MB
 
 # URL base del servicio externo (en Docker = nombre del contenedor)
 feign:
