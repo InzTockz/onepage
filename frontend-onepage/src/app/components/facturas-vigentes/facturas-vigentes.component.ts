@@ -1,7 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { PagosVigenteResponse } from '../../models/pagos/pagos-vigente-response.model';
+import { PagoVigenteService } from '../../services/pago-vigente.service';
 
 interface FacturaVigente {
   idPago: number;
@@ -22,16 +25,35 @@ interface FacturaVigente {
   templateUrl: './facturas-vigentes.component.html',
   styleUrl: './facturas-vigentes.component.css',
 })
-export class FacturasVigentesComponent {
+export class FacturasVigentesComponent implements OnInit {
 
   bancos = [
     { id: 1, codigo: 'BBVA', nombre: 'BBVA Perú', color: 'blue', logo: 'assets/logos/bbva.svg' },
-    { id: 2, codigo: 'BCP', nombre: 'Banco de Crédito del Perú', color: 'orange', logo: 'assets/logos/bcp.svg' },
-    { id: 3, codigo: 'SCOTIA', nombre: 'Scotiabank Perú', color: 'red', logo: 'assets/logos/scotiabank.svg' },
-    { id: 4, codigo: 'IBK', nombre: 'Interbank', color: 'green', logo: 'assets/logos/interbank.svg' },
+    {
+      id: 2,
+      codigo: 'BCP',
+      nombre: 'Banco de Crédito del Perú',
+      color: 'orange',
+      logo: 'assets/logos/bcp.svg',
+    },
+    {
+      id: 3,
+      codigo: 'SCOTIA',
+      nombre: 'Scotiabank Perú',
+      color: 'red',
+      logo: 'assets/logos/scotiabank.svg',
+    },
+    {
+      id: 4,
+      codigo: 'IBK',
+      nombre: 'Interbank',
+      color: 'green',
+      logo: 'assets/logos/interbank.svg',
+    },
   ];
 
   bancoActivo = signal<number>(1);
+  pagos: PagosVigenteResponse[] = [];
   filtroTexto = '';
 
   // Paginación
@@ -45,12 +67,21 @@ export class FacturasVigentesComponent {
   cargandoArchivo = signal(false);
   errorCarga = signal<string | null>(null);
 
-  constructor(private toastService: ToastrService) { }
+  constructor(private pagoVigenteService: PagoVigenteService, private toastService: ToastrService) { }
 
-  // ===== Estructura del diseño (opera sobre la lista vacía hasta que cargues datos) =====
-  get pagosFiltrados(): FacturaVigente[] {
-    // let resultado = this.pagos.filter((p) => p.idBanco === this.bancoActivo());
-    let resultado: FacturaVigente[] = [];
+  ngOnInit(): void {
+    this.cargarPagos();
+  }
+
+  cargarPagos() {
+    this.pagoVigenteService.getPagosVigentes().subscribe((data) => {
+      this.pagos = data;
+      this.paginaActual.set(1);
+    });
+  }
+
+  get pagosFiltrados(): PagosVigenteResponse[] {
+    let resultado = this.pagos.filter((p) => p.idBanco === this.bancoActivo());
 
     if (this.filtroTexto !== '') {
       const texto = this.filtroTexto.toLowerCase();
@@ -58,13 +89,14 @@ export class FacturasVigentesComponent {
         (p) =>
           p.aceptante.toLowerCase().includes(texto) ||
           p.nroFactura.toLowerCase().includes(texto) ||
-          p.nroTransaccion.toLowerCase().includes(texto),
+          p.nroUnico.toLowerCase().includes(texto),
       );
     }
+
     return resultado;
   }
 
-  get pagosPaginados(): FacturaVigente[] {
+  get pagosPaginados(): PagosVigenteResponse[] {
     const inicio = (this.paginaActual() - 1) * this.tamanioPagina;
     return this.pagosFiltrados.slice(inicio, inicio + this.tamanioPagina);
   }
@@ -89,6 +121,7 @@ export class FacturasVigentesComponent {
     const paginas: (number | '…')[] = [1];
     const inicio = Math.max(2, actual - 1);
     const fin = Math.min(total - 1, actual + 1);
+
     if (inicio > 2) paginas.push('…');
     for (let i = inicio; i <= fin; i++) paginas.push(i);
     if (fin < total - 1) paginas.push('…');
@@ -101,6 +134,7 @@ export class FacturasVigentesComponent {
     if (p < 1 || p > this.totalPaginas) return;
     this.paginaActual.set(p);
   }
+
   paginaAnterior() { this.irAPagina(this.paginaActual() - 1); }
   paginaSiguiente() { this.irAPagina(this.paginaActual() + 1); }
 
@@ -119,7 +153,6 @@ export class FacturasVigentesComponent {
     this.paginaActual.set(1);
   }
 
-  // ===== Modal =====
   abrirModal() {
     this.modalAbierto.set(true);
     this.bancoSeleccionadoCarga = '';
@@ -151,36 +184,71 @@ export class FacturasVigentesComponent {
 
     this.cargandoArchivo.set(true);
 
-    // DEMO: reemplazar por la llamada real al servicio cuando exista el backend.
-    setTimeout(() => {
-      this.cargandoArchivo.set(false);
-      this.toastService.info(
-        'Vista demostrativa: la carga se habilitará cuando el backend esté disponible.',
-        'Pendiente de integración',
-      );
-      this.cerrarModal();
-    }, 1200);
+    this.pagoVigenteService.postCargarPagosVigentes(this.archivoSeleccionado, this.bancoSeleccionadoCarga).subscribe({
+      next: () => {
+        this.cargarPagos();
+        this.toastService.success('Documento cargado', 'Exito')
+        setTimeout(() => {
+          this.cargandoArchivo.set(false);
+          this.cerrarModal();
+        }, 1000);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.cargandoArchivo.set(false);
+        const mensaje = this.extraerMensajeError(err);
+
+        if (err.status === 400) {
+          this.errorCarga.set(mensaje);
+          this.toastService.warning(mensaje, 'Archivo no válido');
+        } else {
+          this.toastService.error(mensaje, 'Error');
+        }
+      },
+    });
+  }
+
+  private extraerMensajeError(err: HttpErrorResponse): string {
+    const cuerpo = err.error;
+    if (cuerpo && typeof cuerpo === 'object') {
+      if (typeof cuerpo.error === 'string') return cuerpo.error;
+      if (typeof cuerpo.message === 'string') return cuerpo.message;
+    }
+    if (typeof cuerpo === 'string' && cuerpo.trim()) return cuerpo;
+    if (err.status === 0) return 'No se pudo conectar con el servidor. Verifica tu conexión.';
+    return 'No se pudo cargar el documento. Intenta nuevamente.';
   }
 
   getEstadoClase(estado: string): string {
     switch (estado) {
-      case 'VIGENTE': return 'bg-amber-50 text-amber-700';
-      case 'INGRESADO': return 'bg-indigo-50 text-indigo-700';
-      case 'RENOVADO': return 'bg-purple-50 text-purple-700';
-      case 'AMORTIZADO': return 'bg-blue-50 text-blue-700';
-      case 'PROTESTADO': return 'bg-red-50 text-red-700';
-      case 'DEVUELTO': return 'bg-amber-50 text-amber-700';
-      default: return 'bg-gray-50 text-gray-600';
+      case 'VIGENTE':
+        return 'bg-amber-50 text-amber-700';
+      case 'INGRESADO':
+        return 'bg-indigo-50 text-indigo-700';
+      case 'RENOVADO':
+        return 'bg-purple-50 text-purple-700';
+      case 'AMORTIZADO':
+        return 'bg-blue-50 text-blue-700';
+      case 'PROTESTADO':
+        return 'bg-red-50 text-red-700';
+      case 'DEVUELTO':
+        return 'bg-amber-50 text-amber-700';
+      default:
+        return 'bg-gray-50 text-gray-600';
     }
   }
 
   getColorBanco(codigo: string): string {
     switch (codigo) {
-      case 'BBVA': return 'text-blue-700';
-      case 'BCP': return 'text-orange-600';
-      case 'SCOTIA': return 'text-red-600';
-      case 'IBK': return 'text-green-700';
-      default: return 'text-gray-700';
+      case 'BBVA':
+        return 'text-blue-700';
+      case 'BCP':
+        return 'text-orange-600';
+      case 'SCOTIA':
+        return 'text-red-600';
+      case 'IBK':
+        return 'text-green-700';
+      default:
+        return 'text-gray-700';
     }
   }
 }

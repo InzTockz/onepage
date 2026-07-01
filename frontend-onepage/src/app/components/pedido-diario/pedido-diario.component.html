@@ -134,37 +134,37 @@
               </label>
             </td>
             <td
-              class="w-[120px] min-w-[120px] max-w-[120px] px-3 py-2.5 font-medium text-slate-800 whitespace-nowrap sticky left-10 bg-white z-10"
+              class="w-[120px] min-w-[120px] max-w-[120px] px-3 font-medium text-slate-800 whitespace-nowrap sticky left-10 bg-white z-10"
             >
               {{ pd.codCliente }}
             </td>
             <td
-              class="w-[250px] min-w-[250px] px-3 py-2.5 text-slate-800 whitespace-nowrap truncate sticky left-[calc(2.5rem+120px)] bg-white z-10 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.06)]"
+              class="w-[250px] min-w-[250px] px-3 text-slate-800 whitespace-nowrap truncate sticky left-[calc(2.5rem+120px)] bg-white z-10 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.06)]"
             >
               {{ pd.nombre }}
             </td>
-            <td class="px-3 xl:px-4 py-2.5 whitespace-nowrap tabular-nums">
+            <td class="px-3 xl:px-4 whitespace-nowrap tabular-nums">
               {{ pd.condicionPago }}
             </td>
-            <td class="px-3 xl:px-4 py-2.5 text-right font-medium whitespace-nowrap tabular-nums">
+            <td class="px-3 xl:px-4 text-right font-medium whitespace-nowrap tabular-nums">
               {{ pd.montoTotalPedido | number: '1.2-2' }}
             </td>
-            <td class="px-3 xl:px-4 py-2.5 text-right whitespace-nowrap tabular-nums">
+            <td class="px-3 xl:px-4 text-right whitespace-nowrap tabular-nums">
               {{ pd.lineaCredito }}
             </td>
-            <td class="px-3 xl:px-4 py-2.5 whitespace-nowrap tabular-nums">
+            <td class="px-3 xl:px-4 whitespace-nowrap tabular-nums">
               {{ (pd.fechaUltimaFacturaPagada | date: 'dd/MM/yyyy') ?? '—' }}
             </td>
             <td
-              class="px-3 xl:px-4 py-2.5 text-right whitespace-nowrap tabular-nums font-medium text-red-600"
+              class="px-3 xl:px-4 text-right whitespace-nowrap tabular-nums font-medium text-red-600"
             >
               {{ (pd.montoVencido | number: '1.2-2') ?? '—' }}
             </td>
-            <td class="px-3 xl:px-4 py-2.5 text-right whitespace-nowrap tabular-nums">
+            <td class="px-3 xl:px-4 text-right whitespace-nowrap tabular-nums">
               {{ pd.montoTotalDeuda | number: '1.2-2' }}
             </td>
 
-            <td class="px-3 xl:px-4 py-2.5 text-right whitespace-nowrap tabular-nums">
+            <td class="px-3 xl:px-4 text-right whitespace-nowrap tabular-nums">
               <span
                 class="px-2 py-0.5 rounded-full text-xs font-medium"
                 [class]="
@@ -178,26 +178,26 @@
                 {{ pd.lineaCreditoUtilizada | number: '1.0-0' }}%
               </span>
             </td>
-            <td class="px-3 xl:px-4 py-2.5 text-right whitespace-nowrap tabular-nums">
+            <td class="px-3 xl:px-4 text-right whitespace-nowrap tabular-nums">
               {{ pd.mora | number: '1.0-0' }}%
             </td>
 
-            <td class="px-3 xl:px-4 py-2.5 text-right whitespace-nowrap tabular-nums">
+            <td class="px-3 xl:px-4 text-right whitespace-nowrap tabular-nums">
               {{ pd.nroFacturasVencidas }}
             </td>
-            <td class="px-3 xl:px-4 py-2.5 text-right whitespace-nowrap tabular-nums">
+            <td class="px-3 xl:px-4 text-right whitespace-nowrap tabular-nums">
               {{ (pd.montoPorCobrar | number: '1.2-2') ?? '—' }}
             </td>
-            <td class="px-3 xl:px-4 py-2.5 whitespace-nowrap tabular-nums">
+            <td class="px-3 xl:px-4 whitespace-nowrap tabular-nums">
               {{ (pd.fechaFacturaVencidaMasAntigua | date: 'dd/MM/yyyy') ?? '—' }}
             </td>
-            <td class="px-3 xl:px-4 py-2.5 whitespace-nowrap tabular-nums">
+            <td class="px-3 xl:px-4 whitespace-nowrap tabular-nums">
               {{ formatoHora(pd.docTime) }}
             </td>
-            <td class="px-3 xl:px-4 py-2.5 whitespace-nowrap tabular-nums">
+            <td class="px-3 xl:px-4 whitespace-nowrap tabular-nums">
               {{ pd.fechaCreacionPedido | date: 'dd/MM/yyyy' }}
             </td>
-            <td class="px-3 xl:px-4 py-2.5 whitespace-nowrap tabular-nums">
+            <td class="px-3 xl:px-4 whitespace-nowrap tabular-nums">
               @switch (pd.estadoBorrador) {
                 @case ('PEDIDO_REGISTRADO') {
                   <svg
@@ -228,7 +228,7 @@
                 }
               }
             </td>
-            <td class="px-3 xl:px-4 py-2.5 whitespace-nowrap tabular-nums">
+            <td class="px-3 xl:px-4 whitespace-nowrap tabular-nums">
               <input
                 class="min-w-[200px] w-full p-1.5 px-3 text-xs bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder:text-gray-400 outline-none hover:border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:bg-white transition-all"
                 type="text"

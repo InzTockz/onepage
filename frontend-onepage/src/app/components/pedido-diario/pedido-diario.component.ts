@@ -25,7 +25,7 @@ export class PedidoDiarioComponent implements OnInit, AfterViewInit, OnDestroy {
   lotePedidos: LotePedido[] = [];
   lotePedido!: LotePedido;
   page = 1;
-  pageSize = 10;
+  pageSize = 20;
 
   constructor(private borradoresService: BorradoresService, private lotePedidoService: LotePedidoService,
     private toastr: ToastrService
