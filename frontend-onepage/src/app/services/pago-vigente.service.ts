@@ -8,7 +8,8 @@ import { Observable } from 'rxjs';
 })
 export class PagoVigenteService {
 
-  private apiPagoVigente: string = "http://localhost:8080/api/v1/pagos-vigentes";
+  // private apiPagoVigente: string = "http://localhost:8080/api/v1/pagos-vigentes";
+  private apiPagoVigente: string = "/api/v1/pagos-vigentes";
 
   constructor(private http: HttpClient) { }
 

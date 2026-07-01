@@ -7,8 +7,8 @@ import { Observable } from 'rxjs';
 })
 export class ReportesService {
 
-  private apiReporte = 'http://localhost:8080/api/v1/reportes';
-  // private apiPago = '/api/v1/bancos';
+  // private apiReporte = 'http://localhost:8080/api/v1/reportes';
+  private apiReporte = '/api/v1/reportes';
 
   constructor(private http: HttpClient) { }
 

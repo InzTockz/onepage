@@ -8,8 +8,8 @@ import { ClienteDeudor } from '../models/cliente/cliente-deudor.model';
 })
 export class ClienteService {
 
-  private clienteApi: string = "http://localhost:8080/api/v1/clientes";
-  // private clienteApi: string = "/api/v1/clientes";
+  // private clienteApi: string = "http://localhost:8080/api/v1/clientes";
+  private clienteApi: string = "/api/v1/clientes";
 
   constructor(private http: HttpClient) { }
 
