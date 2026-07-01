@@ -1,9 +1,11 @@
 package com.battilana.onepage.service.impl;
 
 import com.battilana.onepage.dto.pago.PagoVigenteNormalizadoDto;
+import com.battilana.onepage.dto.pago.PagoVigenteResponse;
 import com.battilana.onepage.entity.BancoEntity;
 import com.battilana.onepage.entity.PagoVigenteEntity;
 import com.battilana.onepage.exception.FormatoArchivoNoValidoException;
+import com.battilana.onepage.mappers.PagoVigenteMapper;
 import com.battilana.onepage.repository.BancoRepository;
 import com.battilana.onepage.repository.PagoVigenteRepository;
 import com.battilana.onepage.service.PagoVigenteService;
@@ -27,6 +29,12 @@ public class PagoVigenteServiceImpl implements PagoVigenteService {
     private final PagoVigenteRepository pagoVigenteRepository;
     private final ScotiabankVigenteParser scotiabankVigenteParser;
     private final BancoRepository bancoRepository;
+    private final PagoVigenteMapper pagoVigenteMapper;
+
+    @Override
+    public List<PagoVigenteResponse> listado() {
+        return this.pagoVigenteMapper.toPagoVigenteResponseList(this.pagoVigenteRepository.findAll());
+    }
 
     @Override
     @Transactional
