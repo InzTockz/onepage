@@ -8,6 +8,6 @@ import java.util.List;
 public interface ReportesService {
 
     byte[] reporteGeneralDeFacturas() throws  IOException;
-    byte[] generarExcel(Integer slpCode) throws IOException;
+    byte[] generarEstadoCuentaPorVendedor(Integer slpCode) throws IOException;
     byte[] generarPdf(List<FacturasPorCobrarResponse> facturas) throws IOException;
 }

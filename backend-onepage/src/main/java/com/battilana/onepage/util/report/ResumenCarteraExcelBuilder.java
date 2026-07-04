@@ -1,16 +1,11 @@
 package com.battilana.onepage.util.report;
 
 import com.battilana.onepage.dto.facturas.FacturasPorCobrarClientResponse;
-import com.battilana.onepage.dto.facturas.FacturasPorCobrarResponse;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.springframework.stereotype.Component;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -19,7 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
-public class ExcelReportBuilder {
+public class ResumenCarteraExcelBuilder {
 
     //Formato que viene de la API
     private static final DateTimeFormatter FMT_API = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -44,7 +39,7 @@ public class ExcelReportBuilder {
 
     public byte[] build(List<FacturasPorCobrarClientResponse> facturas) throws IOException {
         try (SXSSFWorkbook workbook = new SXSSFWorkbook(100)) {
-            Styles styles = new Styles(workbook);
+            ExcelStyles styles = new ExcelStyles(workbook);
 
             Map<String, List<FacturasPorCobrarClientResponse>> agrupado = facturas.stream()
                     .collect(Collectors.groupingBy(
@@ -66,18 +61,10 @@ public class ExcelReportBuilder {
         }
     }
 
-    private void escribirHoja(SXSSFWorkbook workbook, Styles styles,
-                              String nombreHoja,
-                              List<FacturasPorCobrarClientResponse> facturas) {
+    private void escribirHoja(SXSSFWorkbook workbook, ExcelStyles styles,
+                              String nombreHoja, List<FacturasPorCobrarClientResponse> facturas) {
         Sheet sheet = workbook.createSheet(nombreHoja);
         int rowNum = 0;
-
-        // Fila 1: Consultor
-        Row consultorRow = sheet.createRow(rowNum++);
-        Cell consultorCell = consultorRow.createCell(0);
-        consultorCell.setCellValue("Consultor: " + facturas.get(0).vendedor());
-        consultorCell.setCellStyle(styles.title);
-        rowNum++; // fila vacía
 
         // Headers
         Row headerRow = sheet.createRow(rowNum++);
@@ -98,15 +85,13 @@ public class ExcelReportBuilder {
             row.createCell(1).setCellValue(f.nombre());
             row.createCell(2).setCellValue(f.documento());
             row.createCell(3).setCellValue(f.comprobante());
-//            row.createCell(4).setCellValue(f.emision());
-//            row.createCell(5).setCellValue(f.vencimiento());
-            row.createCell(4).setCellValue(formatearFecha(f.emision()));
-            row.createCell(5).setCellValue(formatearFecha(f.vencimiento()));
+            row.createCell(4).setCellValue(ExcelCeldas.formatearFecha(f.emision(), FMT_API, FMT_DISPLAY));
+            row.createCell(5).setCellValue(ExcelCeldas.formatearFecha(f.vencimiento(), FMT_API, FMT_DISPLAY));
             row.createCell(6).setCellValue(f.moneda());
-            setCurrencyCell(row, 7,  f.importe(), styles.number);
-            setCurrencyCell(row, 8,  f.saldo(),   styles.number);
+            ExcelCeldas.moneda(row, 7,  f.importe(), styles.number);
+            ExcelCeldas.moneda(row, 8,  f.saldo(),   styles.number);
             row.createCell(9).setCellValue(f.vendedor());
-            setCurrencyCell(row, 10,  f.lc(),      styles.number);
+            ExcelCeldas.moneda(row, 10, f.lc(),      styles.number);
             row.createCell(11).setCellValue(fechaHoy);
             row.createCell(12).setCellValue(dias);
             row.createCell(13).setCellValue(estadoVence(dias));
@@ -128,49 +113,5 @@ public class ExcelReportBuilder {
         if (dias <= 90)  return "61 - 90";
         if (dias <= 180) return "91 - 180";
         return "+ 180";
-    }
-
-    private void setCurrencyCell(Row row, int col, BigDecimal value, CellStyle style) {
-        Cell cell = row.createCell(col);
-        cell.setCellValue(value != null ? value.doubleValue() : 0.0);
-        cell.setCellStyle(style);
-    }
-
-    private static class Styles {
-        final CellStyle title;
-        final CellStyle header;
-        final CellStyle number;
-
-        Styles(SXSSFWorkbook wb){
-            //titulo consultor
-            title = wb.createCellStyle();
-            Font titleFont = wb.createFont();
-            titleFont.setBold(true);
-            titleFont.setFontHeightInPoints((short) 12);
-            title.setFont(titleFont);
-
-            // Header columnas
-            header = wb.createCellStyle();
-            Font headerFont = wb.createFont();
-            headerFont.setBold(true);
-            headerFont.setColor(IndexedColors.WHITE.getIndex());
-            header.setFont(headerFont);
-            ((XSSFCellStyle) header).setFillForegroundColor(
-                    new XSSFColor(new byte[]{(byte) 26, (byte) 46, (byte) 113}, null)
-            );
-            header.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            header.setAlignment(HorizontalAlignment.CENTER);
-            header.setBorderBottom(BorderStyle.THIN);
-
-            // Números
-            number = wb.createCellStyle();
-            DataFormat fmt = wb.createDataFormat();
-            number.setDataFormat(fmt.getFormat("#,##0.00"));
-            number.setAlignment(HorizontalAlignment.RIGHT);
-        }
-    }
-
-    private String formatearFecha(String fecha) {
-        return LocalDate.parse(fecha, FMT_API).format(FMT_DISPLAY);
     }
 }

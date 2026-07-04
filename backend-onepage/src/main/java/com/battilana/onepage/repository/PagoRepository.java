@@ -15,4 +15,5 @@ public interface PagoRepository extends JpaRepository<PagoEntity, Long> {
             "FROM PagoEntity P " +
             "WHERE P.fechaOperacion BETWEEN :fechaInicio AND :fechaFin")
     List<PagoEntity> buscarPorFechas(@RequestParam("fechaInicio") String fechaInicio, @RequestParam("fechaFin") String fechaFin);
+
 }

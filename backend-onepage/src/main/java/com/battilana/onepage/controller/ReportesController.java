@@ -30,9 +30,9 @@ public class ReportesController {
                 .body(bytes);
     }
 
-    @GetMapping("/excel")
-    public ResponseEntity<byte[]> descargarExcel(@RequestParam Integer vendedor) throws IOException {
-        byte[] bytes = reportesService.generarExcel(vendedor);
+    @GetMapping("/estado-cuenta-por-vendedor")
+    public ResponseEntity<byte[]> generarEstadoCuentaPorVendedor(@RequestParam Integer vendedor) throws IOException {
+        byte[] bytes = reportesService.generarEstadoCuentaPorVendedor(vendedor);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"reporte_" + vendedor + ".xlsx\"")
                 .contentType(MediaType.parseMediaType(

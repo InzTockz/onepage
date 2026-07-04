@@ -4,7 +4,8 @@ import com.battilana.onepage.client.FacturaClienteClient;
 import com.battilana.onepage.dto.facturas.FacturasPorCobrarClientResponse;
 import com.battilana.onepage.dto.facturas.FacturasPorCobrarResponse;
 import com.battilana.onepage.service.ReportesService;
-import com.battilana.onepage.util.report.ExcelReportBuilder;
+import com.battilana.onepage.util.report.EstadoCuentaExcelBuilder;
+import com.battilana.onepage.util.report.ResumenCarteraExcelBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,18 +16,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReportesServiceImpl implements ReportesService {
 
-    private final ExcelReportBuilder excelReportBuilder;
+    private final ResumenCarteraExcelBuilder resumenCarteraExcelBuilder;
+    private final EstadoCuentaExcelBuilder estadoCuentaExcelBuilder;
     private final FacturaClienteClient facturaClienteClient;
 
     @Override
     public byte[] reporteGeneralDeFacturas() throws IOException {
-        return excelReportBuilder.build(facturaClienteClient.buscarFacturasPorCobrar());
+        return resumenCarteraExcelBuilder.build(facturaClienteClient.buscarFacturasPorCobrar());
     }
 
     @Override
-    public byte[] generarExcel(Integer slpCode) throws IOException {
+    public byte[] generarEstadoCuentaPorVendedor(Integer slpCode) throws IOException {
         List<FacturasPorCobrarClientResponse> facturas = facturaClienteClient.buscarFacturasPorCobrarPorVendedor(slpCode);
-        return excelReportBuilder.build(facturas);
+        return this.estadoCuentaExcelBuilder.build(facturas);
     }
 
     @Override
