@@ -765,11 +765,14 @@ export class HomeComponent implements OnInit {
 
   //FACTURAS POR COBRAR: SUMA DE TODOS LOS MONTOS VENCIDOS
   getRecibosVencidosTotal(): number {
+    // return this.facturasPorCobrar
+    //   .filter((f) => {
+    //     const dias = this.calDiasVencimiento(f.vencimiento);
+    //     return dias >= 0;
+    //   })
+    //   .reduce((total, f) => total + f.saldo, 0);
     return this.facturasPorCobrar
-      .filter((f) => {
-        const dias = this.calDiasVencimiento(f.vencimiento);
-        return dias >= 0;
-      })
+      .filter((f) => this.calDiasVencimiento(f.vencimiento) > 0)   // vencido = días > 0
       .reduce((total, f) => total + f.saldo, 0);
   }
 
@@ -804,14 +807,23 @@ export class HomeComponent implements OnInit {
   }
 
   calDiasVencimiento(fechaVencimiento: string): number {
-    // Creamos la fecha CORRECTAMENTE
-    const vencimiento = new Date(fechaVencimiento);
+    // // Creamos la fecha CORRECTAMENTE
+    // const vencimiento = new Date(fechaVencimiento);
+    // const hoy = new Date();
+
+    // const diferencia = hoy.getTime() - vencimiento.getTime();
+    // const dias = Math.ceil(diferencia / (1000 * 60 * 60 * 24));
+
+    // return dias;
+
+    const v = new Date(fechaVencimiento.substring(0, 10) + 'T00:00:00');
+
+    // Hoy a medianoche LOCAL (le quitamos la hora)
     const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
 
-    const diferencia = hoy.getTime() - vencimiento.getTime();
-    const dias = Math.ceil(diferencia / (1000 * 60 * 60 * 24));
-
-    return dias;
+    // Días completos; Math.round por si hay ajuste de horario de verano
+    return Math.round((hoy.getTime() - v.getTime()) / 86400000);
   }
 
   getPorcentajeVencidoCalc(): number {

@@ -31,4 +31,9 @@ export class NavbarComponent {
   primeraGestion: boolean = false;
   segundaGestion: boolean = false;
   terceraGestion: boolean = false;
+  sidebarOculto: boolean = false;
+
+  toggleSidebar() {
+    this.sidebarOculto = !this.sidebarOculto;
+  }
 }
