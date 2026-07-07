@@ -1,5 +1,6 @@
 package com.battilana.onepage.controller;
 
+import com.battilana.onepage.dto.facturas.FacturasPorCobrarClientResponse;
 import com.battilana.onepage.service.ReportesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/reportes")
@@ -30,7 +32,7 @@ public class ReportesController {
                 .body(bytes);
     }
 
-    @GetMapping("/estado-cuenta-por-vendedor")
+    @GetMapping("/excel/estado-cuenta-por-vendedor")
     public ResponseEntity<byte[]> generarEstadoCuentaPorVendedor(@RequestParam Integer vendedor) throws IOException {
         byte[] bytes = reportesService.generarEstadoCuentaPorVendedor(vendedor);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
@@ -38,6 +40,15 @@ public class ReportesController {
                 .contentType(MediaType.parseMediaType(
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 ))
+                .body(bytes);
+    }
+
+    @GetMapping("/pdf/estado-cuenta-por-vendedor")
+    public ResponseEntity<byte[]> estadoCuentaPdf(@RequestParam("vendedor") Integer vendedor) throws IOException {
+        byte[] bytes = reportesService.reporteEstadoCuentaPorVendedorPdf(vendedor);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"estado_cuenta.pdf\"")
+                .contentType(MediaType.APPLICATION_PDF)
                 .body(bytes);
     }
 }

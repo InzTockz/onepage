@@ -5,6 +5,7 @@ import com.battilana.onepage.dto.facturas.FacturasPorCobrarClientResponse;
 import com.battilana.onepage.dto.facturas.FacturasPorCobrarResponse;
 import com.battilana.onepage.service.ReportesService;
 import com.battilana.onepage.util.report.EstadoCuentaExcelBuilder;
+import com.battilana.onepage.util.report.EstadoCuentaPdfBuilder;
 import com.battilana.onepage.util.report.ResumenCarteraExcelBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class ReportesServiceImpl implements ReportesService {
     private final ResumenCarteraExcelBuilder resumenCarteraExcelBuilder;
     private final EstadoCuentaExcelBuilder estadoCuentaExcelBuilder;
     private final FacturaClienteClient facturaClienteClient;
+    private final EstadoCuentaPdfBuilder estadoCuentaPdfBuilder;
 
     @Override
     public byte[] reporteGeneralDeFacturas() throws IOException {
@@ -32,7 +34,8 @@ public class ReportesServiceImpl implements ReportesService {
     }
 
     @Override
-    public byte[] generarPdf(List<FacturasPorCobrarResponse> facturas) throws IOException {
-        return new byte[0];
+    public byte[] reporteEstadoCuentaPorVendedorPdf(Integer slpCode) throws IOException {
+        List<FacturasPorCobrarClientResponse> facturas = facturaClienteClient.buscarFacturasPorCobrarPorVendedor(slpCode);
+        return this.estadoCuentaPdfBuilder.build(facturas);
     }
 }

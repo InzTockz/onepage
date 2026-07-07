@@ -161,31 +161,32 @@ public class BorradoresServiceImpl implements BorradoresService {
         pd.setCondicionPago(p.pymntGroup());
         pd.setFechaUltimaFacturaPagada(p.docDate());
 
+        //TEST PARA ANALIZAR LAS FACTURAS VENCIDAS
+        pd.setNroFacturasVencidas(p.facturasVencidas());
+        BigDecimal deudaTotal = p.montoPorVencer().add(p.montoVencido());
+        pd.setMontoTotalDeuda(deudaTotal);
+        pd.setMontoVencido(p.montoVencido());
+        pd.setFechaFacturaVencidaMasAntigua(p.fechaVencida());
+        pd.setLineaCredito(p.creditLine());
+        pd.setMontoPorCobrar(p.montoPorVencer());
+
         if (p.creditLine().compareTo(BigDecimal.ZERO) > 0
                 && !p.pymntGroup().equalsIgnoreCase("Contado")) {
-            BigDecimal deudaTotal = p.montoPorVencer().add(p.montoVencido());
+            pd.setMora(BigDecimal.valueOf(100));
             BigDecimal lineaUtilizada = deudaTotal
                     .divide(p.creditLine(), 2, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
-
-            pd.setLineaCredito(p.creditLine());
-            pd.setMontoPorCobrar(p.montoPorVencer());
-            pd.setMontoVencido(p.montoVencido());
             pd.setLineaCreditoUtilizada(lineaUtilizada);
-            pd.setMontoTotalDeuda(deudaTotal);
-            pd.setMora(BigDecimal.valueOf(100));
-            pd.setNroFacturasVencidas(p.facturasVencidas());
-            pd.setFechaFacturaVencidaMasAntigua(p.fechaVencida());
         } else {
-            pd.setLineaCredito(BigDecimal.ZERO);
-            pd.setMontoPorCobrar(BigDecimal.ZERO);
-            pd.setMontoVencido(BigDecimal.ZERO);
+//            pd.setLineaCredito(BigDecimal.ZERO);
+//            pd.setMontoPorCobrar(BigDecimal.ZERO);
+//            pd.setMontoVencido(BigDecimal.ZERO);
             pd.setLineaCreditoUtilizada(BigDecimal.ZERO);
-            pd.setMontoTotalDeuda(BigDecimal.ZERO);
+//            pd.setMontoTotalDeuda(BigDecimal.ZERO);
             pd.setMora(BigDecimal.ZERO);
-            pd.setNroFacturasVencidas(0L);
-            pd.setFechaFacturaVencidaMasAntigua(
-                    LocalDateTime.of(LocalDate.of(1900, 1, 1), LocalTime.of(0, 0)));
+//            pd.setNroFacturasVencidas(0L);
+//            pd.setFechaFacturaVencidaMasAntigua(
+//                    LocalDateTime.of(LocalDate.of(1900, 1, 1), LocalTime.of(0, 0)));
         }
     }
 }

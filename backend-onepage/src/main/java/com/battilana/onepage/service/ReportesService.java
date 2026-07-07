@@ -9,5 +9,5 @@ public interface ReportesService {
 
     byte[] reporteGeneralDeFacturas() throws  IOException;
     byte[] generarEstadoCuentaPorVendedor(Integer slpCode) throws IOException;
-    byte[] generarPdf(List<FacturasPorCobrarResponse> facturas) throws IOException;
+    byte[] reporteEstadoCuentaPorVendedorPdf(Integer slpCode) throws IOException;
 }
