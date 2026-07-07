@@ -8,8 +8,8 @@ import { ResumenCarteraSap } from '../models/factura-cliente/resumen-cartera-sap
   providedIn: 'root',
 })
 export class FacturaClienteService {
-  private facturaClienteApi = 'http://localhost:8080/api/v1/facturas-cliente';
-  // private facturaClienteApi = "/api/v1/facturas-cliente";
+  // private facturaClienteApi = 'http://localhost:8080/api/v1/facturas-cliente';
+  private facturaClienteApi = "/api/v1/facturas-cliente";
 
   constructor(private http: HttpClient) { }
 
