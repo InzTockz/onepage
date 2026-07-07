@@ -21,9 +21,16 @@ export class ReportesService {
   facturasPorVendedor(slpCode: number): Observable<Blob> {
     const parametros = new HttpParams().set('vendedor', slpCode)
 
-    return this.http.get(`${this.apiReporte}/excel`, {
+    return this.http.get(`${this.apiReporte}/excel/estado-cuenta-por-vendedor`, {
       params: parametros, responseType: 'blob'
     });
+  }
+
+  estadoCuentaPorVendedorPdf(slpCode: number): Observable<Blob> {
+    const parametros = new HttpParams().set('vendedor', slpCode)
+    return this.http.get(`${this.apiReporte}/pdf/estado-cuenta-por-vendedor`, {
+      params: parametros, responseType: 'blob'
+    })
   }
 
 }

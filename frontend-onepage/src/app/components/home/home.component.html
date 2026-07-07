@@ -72,7 +72,7 @@
                 <span class="text-[10px] text-gray-500 uppercase tracking-widest">Clientes</span>
               </div>
               <span class="text-5xl font-extrabold text-gray-800 tabular-nums">{{
-                clientesDeudores.length
+                contadorClientesDeudores
               }}</span>
             </div>
           </div>
@@ -666,7 +666,6 @@
 
                 <!-- Exportar PDF -->
                 <button
-                  hidden
                   (click)="exportarPdf()"
                   [disabled]="
                     consultorSeleccionada === '-1' ||

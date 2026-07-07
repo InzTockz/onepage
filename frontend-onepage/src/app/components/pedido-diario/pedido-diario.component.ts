@@ -40,29 +40,52 @@ export class PedidoDiarioComponent implements OnInit, AfterViewInit, OnDestroy {
     const el = this.tableContainer.nativeElement;
 
     let isDown = false;
+    let isDragging = false;
     let startX = 0;
     let scrollLeft = 0;
 
     el.onmousedown = (e: MouseEvent) => {
       isDown = true;
+      isDragging = false;
       startX = e.pageX - el.offsetLeft;
       scrollLeft = el.scrollLeft;
     };
 
     el.onmouseleave = () => {
       isDown = false;
+      if (isDragging) {
+        el.classList.remove('cursor-grabbing');
+        el.classList.add('cursor-grab');
+      }
+      isDragging = false;
     };
 
     el.onmouseup = () => {
       isDown = false;
+      if (isDragging) {
+        el.classList.remove('cursor-grabbing');
+        el.classList.add('cursor-grab');
+      }
+      isDragging = false;
     };
 
     el.onmousemove = (e: MouseEvent) => {
       if (!isDown) return;
-      e.preventDefault();
+
       const x = e.pageX - el.offsetLeft;
-      const walk = (x - startX) * 1.5;
-      el.scrollLeft = scrollLeft - walk;
+      const walk = x - startX;
+
+      // Solo activa drag si se mueve más de 5px
+      if (!isDragging && Math.abs(walk) > 5) {
+        isDragging = true;
+        el.classList.remove('cursor-grab');
+        el.classList.add('cursor-grabbing');
+      }
+
+      if (isDragging) {
+        e.preventDefault();
+        el.scrollLeft = scrollLeft - walk * 1.5;
+      }
     };
   }
 

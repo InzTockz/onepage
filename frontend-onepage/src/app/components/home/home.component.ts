@@ -141,6 +141,7 @@ export class HomeComponent implements OnInit {
   mesActual: number = new Date().getMonth() + 1;
   // mesActual: number = 6;
   clientesExpandidos = new Set<string>();
+  contadorClientesDeudores: number = 0;
 
   constructor(
     private clienteService: ClienteService,
@@ -158,6 +159,7 @@ export class HomeComponent implements OnInit {
     this.getFacturasMasVencidasTopDiez();
     this.cargarDataCompleta();
     this.getClientesDeudores();
+    this.getContadorClientesDeudores();
   }
 
   /**VISTA GENERAL DE LOS REPORTES */
@@ -853,6 +855,10 @@ export class HomeComponent implements OnInit {
     this.clienteService.getDeudores().subscribe((data) => (this.clientesDeudores = data));
   }
 
+  getContadorClientesDeudores() {
+    this.clienteService.getDeudores().subscribe((data) => (this.contadorClientesDeudores = data.length));
+  }
+
   getClientesPorVendedor(idVendedor: number) {
     return this.clienteService
       .getClientesPorVendedor(idVendedor)
@@ -955,7 +961,19 @@ export class HomeComponent implements OnInit {
   }
 
   exportarPdf() {
+    const slpCode = Number(this.consultorSeleccionada);
+    this.descargandoPdf = true;
 
+    this.reportesService.estadoCuentaPorVendedorPdf(slpCode).subscribe({
+      next: (blob) => {
+        this.triggerDownload(blob, `estado_cuenta_${slpCode}.pdf`);
+        this.descargandoPdf = false;
+      },
+      error: () => {
+        this.toastrService.error('No se pudo exportar el PDF', 'Error');
+        this.descargandoPdf = false;
+      }
+    });
   }
 
   exportarExcelAntiguedad(): void {
