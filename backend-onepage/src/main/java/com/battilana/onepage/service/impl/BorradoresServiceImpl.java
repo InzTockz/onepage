@@ -97,6 +97,10 @@ public class BorradoresServiceImpl implements BorradoresService {
                 pr.setEstadoBorrador(EstadoBorrador.AUTORIZADO);
                 pr.setEstado(false);
                 aAnular.add(pr);
+            } else if(bc != null && ("O".equalsIgnoreCase(bc.docStatus()) && "N".equalsIgnoreCase(bc.wddStatus()) )){
+                pr.setEstadoBorrador(EstadoBorrador.RECHAZADO);
+                pr.setEstado(false);
+                aAnular.add(pr);
             }
         }
         log.info("La lista de los pedidosDiarioEntity son: {}", pedidoDiario.size());
