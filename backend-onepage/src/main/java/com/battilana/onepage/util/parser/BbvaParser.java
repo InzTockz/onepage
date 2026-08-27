@@ -73,7 +73,8 @@ public class BbvaParser implements BancoParser {
                     CeldaUtil.leerDecimal(fila, 6),
                     CeldaUtil.leerDecimal(fila, 7),
                     CeldaUtil.leerDecimal(fila, 8),
-                    CeldaUtil.leerTexto(fila, 9)
+                    CeldaUtil.leerTexto(fila, 9),
+                    null
             );
             resultado.add(dto);
         }

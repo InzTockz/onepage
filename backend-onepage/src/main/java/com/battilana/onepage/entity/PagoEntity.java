@@ -48,7 +48,6 @@ public class PagoEntity {
     private BancoEntity bancoEntity;
 
     // IDENTIFICADORES
-
     @Column(name = "nro_transaccion", nullable = false, length = 30)
     private String nroTransaccion;
 
@@ -59,7 +58,6 @@ public class PagoEntity {
     private String aceptante;
 
     // FECHAS
-
     @Column(name = "fecha_operacion", nullable = false)
     private LocalDate fechaOperacion;
 
@@ -70,7 +68,6 @@ public class PagoEntity {
     private LocalDate fechaIngresoBanco;
 
     // MONTOS
-
     @Column(name = "moneda", nullable = false, length = 10)
     private String moneda = "Dolares";
 
@@ -90,7 +87,6 @@ public class PagoEntity {
     private BigDecimal gastos;
 
     // ESTADOS
-
     @Column(name = "estado", nullable = false, length = 25)
     private String estado;
 
@@ -101,10 +97,12 @@ public class PagoEntity {
     private String estadoOperativo;
 
     // TRAZABILIDAD
-
     @Column(name = "archivo_origen", length = 120)
     private String archivoOrigen;
 
     @Column(name = "fecha_carga", insertable = false, updatable = false)
     private LocalDateTime fechaCarga;
+
+    @Column(name = "producto", length = 255)
+    private String producto;
 }

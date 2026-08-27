@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class BcpParser implements BancoParser{
+public class BcpParser implements BancoParser {
 
     // Fila 4: headers
     // 0: Nº Letra/Factura | 1: Nº Único | 2: Aceptante-Nombre | 3: Aceptante-Documento
@@ -31,6 +31,8 @@ public class BcpParser implements BancoParser{
         // Buscar la fila de encabezados para saber dónde empieza la data
         int filaInicio = buscarFilaEncabezado(hoja);
         if (filaInicio == -1) return resultado;
+
+        String producto = leerProducto(hoja);
 
         for (int i = filaInicio + 1; i <= hoja.getLastRowNum(); i++) {
             Row fila = hoja.getRow(i);
@@ -57,7 +59,8 @@ public class BcpParser implements BancoParser{
                     CeldaUtil.leerDecimal(fila, 10),                  // interes
                     CeldaUtil.leerDecimal(fila, 11),                  // comision
                     CeldaUtil.leerDecimal(fila, 12),                  // gastos (Portes)
-                    estadoCompleto                                     // estadoOriginal
+                    estadoCompleto,                                  // estadoOriginal
+                    producto
             );
             resultado.add(dto);
         }
@@ -76,5 +79,16 @@ public class BcpParser implements BancoParser{
             }
         }
         return -1;
+    }
+
+    private String leerProducto(Sheet hoja) {
+        for (int i = 0; i <= Math.min(10, hoja.getLastRowNum()); i++) {
+            Row fila = hoja.getRow(i);
+            if (fila == null) continue;
+            if (CeldaUtil.leerTexto(fila, 0).equalsIgnoreCase("Producto")) {
+                return CeldaUtil.leerTexto(fila, 1);
+            }
+        }
+        return null;
     }
 }

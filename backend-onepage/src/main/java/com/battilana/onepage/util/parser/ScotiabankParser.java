@@ -49,7 +49,8 @@ public class ScotiabankParser implements BancoParser{
                     null,                                              // interes (Scotiabank no lo tiene)
                     null,                                              // comision
                     null,                                              // gastos
-                    CeldaUtil.leerTexto(fila, 5)                      // estadoOriginal (Situación)
+                    CeldaUtil.leerTexto(fila, 5)     ,
+                    null// estadoOriginal (Situación)
             );
             resultado.add(dto);
         }

@@ -97,6 +97,7 @@ public class PagoServiceImpl implements PagoService {
                     entity.setGastos(dto.gastos());
                     entity.setEstadoOriginal(dto.estadoOriginal());
                     entity.setEstado(HomologacionEstado.homologar(dto.estadoOriginal()));
+                    entity.setProducto(dto.producto());
                     entity.setArchivoOrigen(nombreArchivo);
                     return entity;
                 })

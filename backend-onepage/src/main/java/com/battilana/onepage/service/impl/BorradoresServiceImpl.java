@@ -159,8 +159,8 @@ public class BorradoresServiceImpl implements BorradoresService {
 
     private void actualizarCampos(BorradoresEntity pd, PedidoDiarioClientResponse p) {
         pd.setFechaCreacionPedido(p.fechaCreacionPedido());
-        pd.setFechaRegistro(LocalDateTime.now());
         pd.setDocTime(p.docTime());
+        pd.setFechaRegistro(LocalDateTime.now());
         pd.setMontoTotalPedido(p.docTotalFC());
         pd.setCondicionPago(p.pymntGroup());
         pd.setFechaUltimaFacturaPagada(p.docDate());

@@ -16,6 +16,7 @@ public record PagoNormalizadoDto(
         BigDecimal interes,
         BigDecimal comision,
         BigDecimal gastos,
-        String estadoOriginal
+        String estadoOriginal,
+        String producto
 ) {
 }

@@ -38,4 +38,9 @@ public class ReportesServiceImpl implements ReportesService {
         List<FacturasPorCobrarClientResponse> facturas = facturaClienteClient.buscarFacturasPorCobrarPorVendedor(slpCode);
         return this.estadoCuentaPdfBuilder.build(facturas);
     }
+
+    @Override
+    public byte[] reporteFactuasYLetrasCanceladasCSV() throws IOException {
+        return new byte[0];
+    }
 }

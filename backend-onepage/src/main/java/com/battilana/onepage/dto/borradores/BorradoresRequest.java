@@ -28,7 +28,7 @@ public record BorradoresRequest(
         LocalDateTime fechaLoteEnviado,
         EstadoBorrador estadoBorrador,
         String facturasVencidas,
-        Short docTime,
+        Integer docTime,
         String comentario
 ) {
 }
