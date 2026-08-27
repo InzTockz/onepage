@@ -1,6 +1,8 @@
 export class LotePedido {
     idLotePedidos: number;
     docEntry: number;
+    docTime: number;
+    fechaCreacionPedido: string;
     codCliente: string;
     nombre: string;
     montoTotalPedido: number;
@@ -15,13 +17,11 @@ export class LotePedido {
     fechaFacturaVencidaMasAntigua: string;
     fechaUltimaFacturaPagada: string;
 
-    fechaCreacionPedido: string;
     fechaRegistro: string;
     fechaLoteGenerado: string;
     fechaLoteEnviado: string;
     estadoBorrador: string;
     facturasVencidas: string;
-    docTime: number;
     comentario: string;
 
     constructor(
@@ -47,7 +47,7 @@ export class LotePedido {
         estadoBorrador: string,
         facturasVencidas: string,
         docTime: number,
-        comentario: string
+        comentario: string,
     ) {
         this.idLotePedidos = idLotePedidos;
         this.docEntry = docEntry;

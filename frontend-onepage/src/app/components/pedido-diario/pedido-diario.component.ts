@@ -188,10 +188,15 @@ export class PedidoDiarioComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.lotePedidos.filter(pd => this.seleccionados.has(pd.idLotePedidos));
   }
 
-  formatoHora(docTime: number): string {
-    const horas = Math.floor(docTime / 100);
-    const minutos = docTime % 100;
-    return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`
+  formatoHora(updateTS: number | null): string {
+    if (updateTS == null || isNaN(updateTS) || updateTS < 0) return '--:--';
+
+    const horas = Math.floor(updateTS / 10000);
+    const minutos = Math.floor((updateTS % 10000) / 100);
+
+    if (horas > 23 || minutos > 59) return '--:--';   // descarta valores basura
+
+    return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
   }
 
   paginatedData() {

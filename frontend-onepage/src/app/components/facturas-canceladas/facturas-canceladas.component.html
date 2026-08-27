@@ -7,15 +7,23 @@
     </div>
 
     <!-- Botón flotante de nuevo ingreso -->
-    <button
-      (click)="abrirModal()"
-      class="flex items-center gap-2 px-4 py-2.5 bg-blue-900 text-white text-xs font-semibold rounded-xl hover:bg-blue-800 active:bg-blue-950 transition-all shadow-md hover:shadow-lg"
-    >
-      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <path d="M12 5v14M5 12h14" />
-      </svg>
-      Nuevo ingreso
-    </button>
+    <div class="flex flex-row gap-2">
+      <button
+        (click)="abrirModal()"
+        class="flex items-center gap-2 px-4 py-2.5 bg-blue-900 text-white text-xs font-semibold rounded-xl hover:bg-blue-800 active:bg-blue-950 transition-all shadow-md hover:shadow-lg"
+      >
+        <svg
+          class="w-4 h-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+        >
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+        Nuevo ingreso
+      </button>
+    </div>
   </div>
 
   <!-- Tabs de bancos -->
@@ -76,7 +84,28 @@
       />
     </div>
   </div>
-
+  <div class="flex flex-row justify-end mb-3 mr-2">
+    <button
+      title="Exportar a TXT"
+      aria-label="Exportar a TXT"
+      class="flex items-center justify-center cursor-pointer w-9 h-9 rounded-lg bg-white border border-gray-200 text-gray-500 shadow-sm hover:bg-gray-50 hover:text-blue-900 hover:border-blue-200 active:bg-gray-100 transition-all"
+    >
+      <svg
+        class="w-4 h-4"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M15 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7z" />
+        <path d="M14 2v4a2 2 0 002 2h4" />
+        <path d="M12 18v-6" />
+        <path d="M9 15l3 3 3-3" />
+      </svg>
+    </button>
+  </div>
   <!-- Tabla -->
   <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
     @if (pagosFiltrados.length === 0) {
