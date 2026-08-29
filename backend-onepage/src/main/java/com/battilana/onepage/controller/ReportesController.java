@@ -51,4 +51,12 @@ public class ReportesController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(bytes);
     }
+
+    @GetMapping("/csv/reporte-fac-let-canceladas/{idBanco}")
+    public ResponseEntity<byte[]> reporteFactuasYLetrasCanceladasCSV(@PathVariable Short idBanco) throws IOException {
+        byte[] bytes = reportesService.reporteFactuasYLetrasCanceladasCSV(idBanco);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(bytes);
+    }
 }

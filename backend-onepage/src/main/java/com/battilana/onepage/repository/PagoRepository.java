@@ -3,6 +3,7 @@ package com.battilana.onepage.repository;
 import com.battilana.onepage.entity.PagoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -13,7 +14,12 @@ public interface PagoRepository extends JpaRepository<PagoEntity, Long> {
 
     @Query("SELECT P " +
             "FROM PagoEntity P " +
+            "WHERE P.bancoEntity.idBanco =:idBanco " +
+            "ORDER BY P.idPago DESC")
+    List<PagoEntity> buscarPorIdBanco(@RequestParam("idBanco") Short idBanco);
+
+    @Query("SELECT P " +
+            "FROM PagoEntity P " +
             "WHERE P.fechaOperacion BETWEEN :fechaInicio AND :fechaFin")
     List<PagoEntity> buscarPorFechas(@RequestParam("fechaInicio") String fechaInicio, @RequestParam("fechaFin") String fechaFin);
-
 }

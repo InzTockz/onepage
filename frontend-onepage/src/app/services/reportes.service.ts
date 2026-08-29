@@ -33,4 +33,10 @@ export class ReportesService {
     })
   }
 
+  reporteFactuasYLetrasCanceladasCSV(idBanco: number): Observable<Blob> {
+    return this.http.get(`${this.apiReporte}/csv/reporte-fac-let-canceladas/${idBanco}`, {
+      responseType: 'blob'
+    });
+  }
+
 }

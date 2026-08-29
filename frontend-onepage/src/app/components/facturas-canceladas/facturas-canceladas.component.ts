@@ -5,6 +5,7 @@ import { PagosResponse } from '../../models/pagos/pagos-response.model';
 import { PagosService } from '../../services/pagos.service';
 import { ToastrService } from 'ngx-toastr';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ReportesService } from '../../services/reportes.service';
 
 @Component({
   selector: 'app-facturas-canceladas',
@@ -52,11 +53,50 @@ export class FacturasCanceladasComponent implements OnInit {
   archivoSeleccionado: File | null = null;
   cargandoArchivo = signal(false);
   errorCarga = signal<string | null>(null); // 👈 NUEVO: mensaje visible en el modal
+  idBancoSeleccionado: number = 0;
 
-  constructor(private pagoService: PagosService, private toastService: ToastrService) { }
+  constructor(private pagoService: PagosService, private toastService: ToastrService, private reporteService: ReportesService) { }
 
   ngOnInit(): void {
     this.cargarPagos();
+  }
+
+  generarCsvFactCanceladas() {
+    this.reporteService.reporteFactuasYLetrasCanceladasCSV(this.idBancoSeleccionado).subscribe({
+      next: (blob) => {
+        switch (this.idBancoSeleccionado) {
+          case 1: {
+            this.triggerDownload(blob, `facturas-canceladas-bbva.csv`);
+            break;
+          }
+          case 2: {
+            this.triggerDownload(blob, `facturas-canceladas-bcp.csv`);
+            break;
+          }
+          case 3: {
+            this.triggerDownload(blob, `facturas-canceladas-scotiabank.csv`);
+            break;
+          }
+          case 4: {
+            this.triggerDownload(blob, `facturas-canceladas-interbank.csv`);
+            break;
+          }
+        }
+
+      },
+      error: () => {
+        this.toastService.error('No se puede exportar a csv', "Error");
+      }
+    });
+  }
+
+  private triggerDownload(blob: Blob, filename: string): void {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   cargarPagos() {
@@ -138,6 +178,7 @@ export class FacturasCanceladasComponent implements OnInit {
     this.bancoActivo.set(id);
     this.filtroTexto = '';
     this.paginaActual.set(1);   // 👈 reinicia al cambiar de banco
+    this.idBancoSeleccionado = id;
   }
 
   // 👇 NUEVO: actualiza el filtro y vuelve a la página 1

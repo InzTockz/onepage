@@ -10,5 +10,5 @@ public interface ReportesService {
     byte[] reporteGeneralDeFacturas() throws  IOException;
     byte[] generarEstadoCuentaPorVendedor(Integer slpCode) throws IOException;
     byte[] reporteEstadoCuentaPorVendedorPdf(Integer slpCode) throws IOException;
-    byte[] reporteFactuasYLetrasCanceladasCSV() throws IOException;
+    byte[] reporteFactuasYLetrasCanceladasCSV(Short idBanco ) throws IOException;
 }
