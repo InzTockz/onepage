@@ -89,15 +89,15 @@ public class BorradoresServiceImpl implements BorradoresService {
                 pr.setEstadoBorrador(EstadoBorrador.ANULADO);
                 pr.setEstado(false);
                 aAnular.add(pr);
-            } else if (bc != null && ("C".equalsIgnoreCase(bc.docStatus()) && "-".equalsIgnoreCase(bc.wddStatus()))){
+            } else if (bc != null && ("C".equalsIgnoreCase(bc.docStatus()) && "-".equalsIgnoreCase(bc.wddStatus()))) {
                 pr.setEstadoBorrador(EstadoBorrador.FACTURADO);
                 pr.setEstado(false);
                 aAnular.add(pr);
-            } else if(bc != null && ("O".equalsIgnoreCase(bc.docStatus()) && "Y".equalsIgnoreCase(bc.wddStatus()))){
+            } else if (bc != null && ("O".equalsIgnoreCase(bc.docStatus()) && "Y".equalsIgnoreCase(bc.wddStatus()))) {
                 pr.setEstadoBorrador(EstadoBorrador.AUTORIZADO);
                 pr.setEstado(false);
                 aAnular.add(pr);
-            } else if(bc != null && ("O".equalsIgnoreCase(bc.docStatus()) && "N".equalsIgnoreCase(bc.wddStatus()) )){
+            } else if (bc != null && ("O".equalsIgnoreCase(bc.docStatus()) && "N".equalsIgnoreCase(bc.wddStatus()))) {
                 pr.setEstadoBorrador(EstadoBorrador.RECHAZADO);
                 pr.setEstado(false);
                 aAnular.add(pr);
