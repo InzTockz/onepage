@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class ScotiabankVigenteParser implements BancoVigenteParser{
+public class ScotiabankVigenteParser implements BancoParser<PagoVigenteNormalizadoDto>{
 
     // Estructura del archivo Scotiabank (.xls):
     //   filas 0-5 -> preámbulo (fecha de generación, RUC + empresa, línea resumen)
@@ -66,7 +66,8 @@ public class ScotiabankVigenteParser implements BancoVigenteParser{
                     CeldaUtil.leerFechaTexto(fila, 4, "dd/MM/yyyy"),
                     normalizarMoneda(CeldaUtil.leerTexto(fila, 5)),
                     CeldaUtil.leerDecimal(fila, 6),
-                    null   // Scotiabank no trae estado -> el service lo homologa a VIGENTE
+                    null,   // Scotiabank no trae estado -> el service lo homologa a VIGENTE
+                    ""
             ));
         }
         return resultado;

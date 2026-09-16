@@ -5,8 +5,11 @@ import com.battilana.onepage.dto.facturas.FacturasPorCobrarClientResponse;
 import com.battilana.onepage.dto.facturas.FacturasPorCobrarResponse;
 import com.battilana.onepage.entity.BancoEntity;
 import com.battilana.onepage.entity.PagoEntity;
+import com.battilana.onepage.entity.PagoVigenteEntity;
 import com.battilana.onepage.repository.PagoRepository;
+import com.battilana.onepage.repository.PagoVigenteRepository;
 import com.battilana.onepage.service.ReportesService;
+import com.battilana.onepage.util.NumeroFacturaUtil;
 import com.battilana.onepage.util.report.EstadoCuentaExcelBuilder;
 import com.battilana.onepage.util.report.EstadoCuentaPdfBuilder;
 import com.battilana.onepage.util.report.ResumenCarteraExcelBuilder;
@@ -22,6 +25,8 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +37,7 @@ public class ReportesServiceImpl implements ReportesService {
     private final FacturaClienteClient facturaClienteClient;
     private final EstadoCuentaPdfBuilder estadoCuentaPdfBuilder;
     private final PagoRepository pagoRepository;
+    private final PagoVigenteRepository pagoVigenteRepository;
 
     @Override
     public byte[] reporteGeneralDeFacturas() throws IOException {
@@ -41,13 +47,13 @@ public class ReportesServiceImpl implements ReportesService {
     @Override
     public byte[] generarEstadoCuentaPorVendedor(Integer slpCode) throws IOException {
         List<FacturasPorCobrarClientResponse> facturas = facturaClienteClient.buscarFacturasPorCobrarPorVendedor(slpCode);
-        return this.estadoCuentaExcelBuilder.build(facturas);
+        return this.estadoCuentaExcelBuilder.build(facturasEnriquecidas(facturas));
     }
 
     @Override
     public byte[] reporteEstadoCuentaPorVendedorPdf(Integer slpCode) throws IOException {
         List<FacturasPorCobrarClientResponse> facturas = facturaClienteClient.buscarFacturasPorCobrarPorVendedor(slpCode);
-        return this.estadoCuentaPdfBuilder.build(facturas);
+        return this.estadoCuentaPdfBuilder.build(facturasEnriquecidas(facturas));
     }
 
     @Override
@@ -158,5 +164,25 @@ public class ReportesServiceImpl implements ReportesService {
         }
 
         return baos.toByteArray();
+    }
+
+    private List<FacturasPorCobrarClientResponse> facturasEnriquecidas(List<FacturasPorCobrarClientResponse> facturas){
+
+        List<PagoVigenteEntity> vigentes = pagoVigenteRepository.findAllWithBank();
+
+        Map<String, PagoVigenteEntity> porFactura = vigentes.stream()
+                .collect(Collectors.toMap(
+                        v -> NumeroFacturaUtil.normalizar(v.getNroFactura()),
+                        v -> v,
+                        (a, b) -> a
+                ));
+
+        return facturas.stream()
+                .map(f -> {
+                    PagoVigenteEntity v = porFactura
+                            .get(NumeroFacturaUtil.normalizar(f.comprobante()));
+                    if( v == null) return f;
+                    return f.conVinculacion(v.getNroUnico(), v.getBancoEntity().getCodigo());
+                }).toList();
     }
 }

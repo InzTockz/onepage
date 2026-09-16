@@ -13,6 +13,16 @@ public record FacturasPorCobrarClientResponse(
         BigDecimal importe,
         BigDecimal saldo,
         String vendedor,
-        BigDecimal lc
+        BigDecimal lc,
+        String nroUnico,
+        String banco
 ) {
+
+    // DEvuelve una copia con el vinculo bancario lleno (los records son inmutables)
+    public FacturasPorCobrarClientResponse conVinculacion(String nroUnico, String banco){
+        return new FacturasPorCobrarClientResponse(
+                ruc, nombre, documento, comprobante, emision, vencimiento, moneda, importe, saldo,
+                vendedor, lc, nroUnico, banco
+        );
+    }
 }

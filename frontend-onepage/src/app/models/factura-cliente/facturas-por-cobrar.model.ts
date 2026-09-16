@@ -10,6 +10,8 @@ export class FacturasPorCobrar {
   saldo: number;
   vendedor: string;
   lc: number;
+  nroUnico: string;
+  banco: string;
 
   constructor(
     ruc: string,
@@ -23,6 +25,8 @@ export class FacturasPorCobrar {
     saldo: number,
     vendedor: string,
     lc: number,
+    nroUnico: string,
+    banco: string
   ) {
     this.ruc = ruc;
     this.nombre = nombre;
@@ -35,5 +39,7 @@ export class FacturasPorCobrar {
     this.saldo = saldo;
     this.vendedor = vendedor;
     this.lc = lc;
+    this.nroUnico = nroUnico;
+    this.banco = banco;
   }
 }

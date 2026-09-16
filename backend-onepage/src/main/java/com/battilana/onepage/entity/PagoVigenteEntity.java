@@ -66,4 +66,10 @@ public class PagoVigenteEntity {
     @JoinColumn(name = "id_banco", nullable = false)
     private BancoEntity bancoEntity;
 
+    @Column(name = "estado_registro")
+    private boolean estadoRegistro; //Se manipula entre 0 si es no valido y 1 si es valido
+
+    @Column(name = "producto", length = 255)
+    private String producto;
+
 }

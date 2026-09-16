@@ -185,8 +185,8 @@ public class EstadoCuentaPdfBuilder {
                 celdaTxt(table, f.comprobante(), dFont, Element.ALIGN_LEFT);
                 celdaTxt(table, fecha(f.emision()), dFont, Element.ALIGN_CENTER);
                 celdaTxt(table, fecha(f.vencimiento()), dFont, Element.ALIGN_CENTER);
-                celdaTxt(table, "", dFont, Element.ALIGN_LEFT);   // N° Único
-                celdaTxt(table, "", dFont, Element.ALIGN_LEFT);   // Banco
+                celdaTxt(table, f.nroUnico(), dFont, Element.ALIGN_LEFT);   // N° Único
+                celdaTxt(table, f.banco(), dFont, Element.ALIGN_LEFT);   // Banco
                 for (int b = 0; b < 7; b++) celdaNum(table, b == idx ? saldo : null, dFont);
                 celdaNum(table, saldo, dFont);
 

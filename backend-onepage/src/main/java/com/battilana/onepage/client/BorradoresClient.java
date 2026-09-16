@@ -2,6 +2,7 @@ package com.battilana.onepage.client;
 
 import com.battilana.onepage.dto.borradores.BorradoresClientResponse;
 import com.battilana.onepage.dto.borradores.BorradoresResponse;
+import com.battilana.onepage.dto.borradores.DetalleBorradoresResponse;
 import com.battilana.onepage.dto.borradores.PedidoDiarioClientResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,9 @@ public interface BorradoresClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/id/{docEntryId}")
     BorradoresClientResponse buscarBorradorPorDocEntry(@PathVariable Integer docEntryId);
+
+    @RequestMapping(method = RequestMethod.GET, value = "/detalle/{docEntry}")
+    List<DetalleBorradoresResponse> buscarDetalleBorradorPorDocEntry(@PathVariable Integer docEntry);
 
     @RequestMapping(method = RequestMethod.GET, value = "/pedidos-diario")
     List<PedidoDiarioClientResponse> buscarPedidosDiarios();

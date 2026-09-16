@@ -11,7 +11,7 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class BbvaParser implements BancoParser {
+public class BbvaParser implements BancoParser<PagoNormalizadoDto> {
 
     // Columnas del detalle (fila 15 en adelante)
     // 0: F. Venc. | 1: Nro. Banco | 2: Nro. Original | 3: Aceptante
@@ -20,7 +20,6 @@ public class BbvaParser implements BancoParser {
     @Override
     public boolean coincideFormato(Workbook workbook) {
         Sheet hoja = workbook.getSheetAt(0);
-        // Huella BBVA: cabecera con "F. Venc" + preámbulo "Fecha Operación"
         // Huella BBVA: cabecera con "F. Venc" + preámbulo "Fecha Operación"
         return CeldaUtil.existeFilaConTokens(hoja, 25, "F. Venc")
                 && CeldaUtil.existeFilaConTokens(hoja, 25, "Fecha Operación");
@@ -78,7 +77,6 @@ public class BbvaParser implements BancoParser {
             );
             resultado.add(dto);
         }
-
         return resultado;
     }
 

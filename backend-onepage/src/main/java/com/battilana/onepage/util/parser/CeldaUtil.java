@@ -9,8 +9,16 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.List;
 
 public class CeldaUtil {
+
+    private static final List<DateTimeFormatter> FORMATOS_FECHA = List.of(
+            DateTimeFormatter.ISO_LOCAL_DATE,
+            DateTimeFormatter.ofPattern("dd/MM/yyyy"),
+            DateTimeFormatter.ofPattern("dd-MM-yyyy")
+    );
 
     // Lee texto de una celda sin importar si Excel la guardó como número o string
     public static String leerTexto(Row fila, int columna) {
@@ -32,24 +40,13 @@ public class CeldaUtil {
             case STRING -> {
                 String texto = celda.getStringCellValue()
                         .replace("US$", "")
+//                        .replace("$")
                         .replace(",", "")
                         .trim();
                 yield texto.isEmpty() ? BigDecimal.ZERO : new BigDecimal(texto);
             }
             default -> BigDecimal.ZERO;
         };
-    }
-
-    // Lee fecha que Excel guardó como tipo Date
-    public static LocalDate leerFechaExcel(Row fila, int columna) {
-        Cell celda = fila.getCell(columna);
-        if (celda == null) return null;
-        if (celda.getCellType() == CellType.NUMERIC) {
-            // Excel guarda fechas como números internamente
-            LocalDateTime ldt = celda.getLocalDateTimeCellValue();
-            return ldt != null ? ldt.toLocalDate() : null;
-        }
-        return null;
     }
 
     // Lee fecha que viene como texto "dd/MM/yyyy"
@@ -67,6 +64,33 @@ public class CeldaUtil {
         if (texto.isEmpty()) return null;
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern(formato);
         return LocalDate.parse(texto, fmt);
+    }
+
+    // Lee fecha tanto si Excel la guardó como número (Date) como si viene en texto (HTML)
+    public static LocalDate leerFechaExcel(Row fila, int columna) {
+        Cell celda = fila.getCell(columna);
+        if (celda == null) return null;
+        return switch (celda.getCellType()) {
+            case NUMERIC -> {
+                LocalDateTime ldt = celda.getLocalDateTimeCellValue();
+                yield ldt != null ? ldt.toLocalDate() : null;
+            }
+            case STRING -> parsearFechaFlexible(celda.getStringCellValue().trim());
+            default -> null;
+        };
+    }
+
+    // Intenta parsear un texto de fecha probando varios formatos conocidos
+    private static LocalDate parsearFechaFlexible(String texto) {
+        if (texto == null || texto.isEmpty()) return null;
+        for (DateTimeFormatter fmt : FORMATOS_FECHA) {
+            try {
+                return LocalDate.parse(texto, fmt);
+            } catch (DateTimeParseException ignorada) {
+                // no era este formato, probamos el siguiente
+            }
+        }
+        return null; // ningún formato coincidió
     }
 
     /**
@@ -101,5 +125,11 @@ public class CeldaUtil {
             }
         }
         return sb.toString();
+    }
+
+    public static String primeraLinea(Row fila, int columna){
+        String texto = leerTexto(fila, columna);
+        if(texto.isEmpty()) return "";
+        return texto.split("\\r?\\n")[0].trim();
     }
 }

@@ -5,7 +5,7 @@ import java.util.Map;
 public class HomologacionEstadoVigente {
 
     private static final Map<String, String> MAPA = Map.ofEntries(
-            Map.entry("VIG", "VIGNETE"),
+            Map.entry("VIG", "VIGENTE"),
             Map.entry("VIGENTE", "VIGENTE"),
             Map.entry("Vigente", "VIGENTE")
     );

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class ScotiabankParser implements BancoParser{
+public class ScotiabankParser implements BancoParser<PagoNormalizadoDto>{
 
     // Fila 6: headers
     // 0: N°. Banco | 1: Pagador/Adquiriente | 2: Fecha operación | 3: Fecha vencimiento
@@ -49,8 +49,8 @@ public class ScotiabankParser implements BancoParser{
                     null,                                              // interes (Scotiabank no lo tiene)
                     null,                                              // comision
                     null,                                              // gastos
-                    CeldaUtil.leerTexto(fila, 5)     ,
-                    null// estadoOriginal (Situación)
+                    CeldaUtil.leerTexto(fila, 5), // estadoOriginal (Situación)
+                    null
             );
             resultado.add(dto);
         }

@@ -10,8 +10,7 @@ import com.battilana.onepage.repository.BancoRepository;
 import com.battilana.onepage.repository.PagoVigenteRepository;
 import com.battilana.onepage.service.PagoVigenteService;
 import com.battilana.onepage.util.HomologacionEstadoVigente;
-import com.battilana.onepage.util.parser.BancoVigenteParser;
-import com.battilana.onepage.util.parser.ScotiabankVigenteParser;
+import com.battilana.onepage.util.parser.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,16 +19,29 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.Normalizer;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class PagoVigenteServiceImpl implements PagoVigenteService {
+
+    /**
+     * VARIABLES ESTATICAS
+     */
+    private static final String LETRA = "Descuento de Letra de Corto Plazo";
+    private static final String FACTURA_NEGOCIABLE = "Descuento de Factura Negociable Electrónica";
+    private static final String COBRANZA_LIBRE = "Cobranza de Factura Negociable Electrónica";
+
     private final PagoVigenteRepository pagoVigenteRepository;
     private final ScotiabankVigenteParser scotiabankVigenteParser;
     private final BancoRepository bancoRepository;
     private final PagoVigenteMapper pagoVigenteMapper;
+    private final BbvaVigenteParser bbvaVigenteParser;
+    private final BcpVigenteParser bcpVigenteParser;
+    private final InterbankVigenteParser interbankVigenteParser;
 
     @Override
     public List<PagoVigenteResponse> listado() {
@@ -39,15 +51,14 @@ public class PagoVigenteServiceImpl implements PagoVigenteService {
     @Override
     @Transactional
     public void registrarPagosVigentes(MultipartFile archivo, String codigoBanco) {
-        log.info("Carga de pagos vigentes: {} para banco {}", archivo.getOriginalFilename(), codigoBanco);
 
         BancoEntity banco = bancoRepository.findByCodigo(codigoBanco)
                 .orElseThrow(() -> new RuntimeException("Banco no encontrado: " + codigoBanco));
 
-        BancoVigenteParser parser = seleccionarParser(codigoBanco);
+        BancoParser<PagoVigenteNormalizadoDto> parser = seleccionarParser(codigoBanco);
 
         List<PagoVigenteNormalizadoDto> normalizados;
-        try (Workbook workbook = WorkbookFactory.create(archivo.getInputStream())) {
+        try (Workbook workbook = WorkbookLoader.cargar(archivo)) {
 
             if (!parser.coincideFormato(workbook)) {
                 throw new FormatoArchivoNoValidoException(
@@ -68,6 +79,21 @@ public class PagoVigenteServiceImpl implements PagoVigenteService {
             return;
         }
 
+        switch (codigoBanco.toUpperCase()){
+            case "BCP" -> {
+                String productoNormalizado = removerAcento(normalizados.getLast().producto());
+                switch (productoNormalizado){
+                    case "Cobranza de Factura Negociable Electronica", "Descuento de Factura Negociable Electronica",
+                         "Descuento de Letra de Corto Plazo" -> {
+                        this.pagoVigenteRepository.deletePagoVigentePorProducto(normalizados.getLast().producto());
+                    }
+                }
+            }
+            case "BBVA", "SCOTIA", "IBK" -> this.pagoVigenteRepository.deletePagoVigentePorCodigo(codigoBanco);
+        }
+
+
+
         String nombreArchivo = archivo.getOriginalFilename();
         List<PagoVigenteEntity> entities = normalizados.stream()
                 .map(dto -> {
@@ -83,6 +109,8 @@ public class PagoVigenteServiceImpl implements PagoVigenteService {
                     e.setEstadoOriginal(dto.estadoOriginal());
                     e.setEstado(HomologacionEstadoVigente.homologar(dto.estadoOriginal()));
                     e.setArchivoOrigen(nombreArchivo);
+                    e.setEstadoRegistro(true);
+                    e.setProducto(dto.producto());
                     return e;
                 })
                 .toList();
@@ -91,10 +119,19 @@ public class PagoVigenteServiceImpl implements PagoVigenteService {
         log.info("Se registraron {} pagos vigentes del banco {}", entities.size(), codigoBanco);
     }
 
-    private BancoVigenteParser seleccionarParser(String codigoBanco) {
+    private BancoParser<PagoVigenteNormalizadoDto> seleccionarParser(String codigoBanco) {
         return switch (codigoBanco.toUpperCase()) {
+            case "BBVA" -> bbvaVigenteParser;
             case "SCOTIA", "SCOTIABANK" -> scotiabankVigenteParser;
+            case "BCP" -> bcpVigenteParser;
+            case "IBK" -> interbankVigenteParser;
             default -> throw new RuntimeException("Parser de vigentes no implementado para: " + codigoBanco);
         };
+    }
+
+    private static String removerAcento(String texto){
+        if(texto == null) return null;
+        String textoNormalizado = Normalizer.normalize(texto, Normalizer.Form.NFD);
+        return textoNormalizado.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
     }
 }

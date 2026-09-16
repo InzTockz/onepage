@@ -17,6 +17,8 @@ public record PagoVigenteResponse(
         String estado,
         String archivoOrigen,
         LocalDateTime fechaRegistro,
-        Long idBanco
+        Long idBanco,
+        boolean estadoRegistro,
+        String producto
 ) {
 }

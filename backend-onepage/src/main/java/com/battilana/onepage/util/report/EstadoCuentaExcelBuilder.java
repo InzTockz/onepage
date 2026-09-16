@@ -224,8 +224,8 @@ public class EstadoCuentaExcelBuilder {
                 texto(r, COL_INI + 2, f.comprobante(), celda);
                 texto(r, COL_INI + 3, ExcelCeldas.formatearFecha(f.emision(), FMT_API, FMT_DISPLAY), celda);
                 texto(r, COL_INI + 4, ExcelCeldas.formatearFecha(f.vencimiento(), FMT_API, FMT_DISPLAY), celda);
-                texto(r, COL_INI + 5, "", celda);   // N° Único (en blanco por ahora)
-                texto(r, COL_INI + 6, "", celda);   // Banco (en blanco por ahora)
+                texto(r, COL_INI + 5, f.nroUnico(), celda);   // N° Único (en blanco por ahora)
+                texto(r, COL_INI + 6, f.banco(), celda);   // Banco (en blanco por ahora)
 
                 for (int b = 0; b < 7; b++) {       // el saldo solo entra en su rango
                     Cell cc = r.createCell(COL_BUCKET0 + b);

@@ -53,7 +53,7 @@ export class FacturasCanceladasComponent implements OnInit {
   archivoSeleccionado: File | null = null;
   cargandoArchivo = signal(false);
   errorCarga = signal<string | null>(null); // 👈 NUEVO: mensaje visible en el modal
-  idBancoSeleccionado: number = 0;
+  idBancoSeleccionado: number = 1;
 
   constructor(private pagoService: PagosService, private toastService: ToastrService, private reporteService: ReportesService) { }
 

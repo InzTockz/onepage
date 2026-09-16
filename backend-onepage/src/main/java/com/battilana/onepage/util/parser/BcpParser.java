@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class BcpParser implements BancoParser {
+public class BcpParser implements BancoParser<PagoNormalizadoDto> {
 
     // Fila 4: headers
     // 0: Nº Letra/Factura | 1: Nº Único | 2: Aceptante-Nombre | 3: Aceptante-Documento

@@ -85,6 +85,7 @@ public class BorradoresServiceImpl implements BorradoresService {
         List<BorradoresEntity> aAnular = new ArrayList<>();
         for (BorradoresEntity pr : this.borradoresRepository.findByEstadoBorradorRegistrado()) {
             BorradoresClientResponse bc = this.borradoresClient.buscarBorradorPorDocEntry(pr.getDocEntry());
+
             if (bc != null && ("O".equalsIgnoreCase(bc.docStatus()) && "C".equalsIgnoreCase(bc.wddStatus()))) {
                 pr.setEstadoBorrador(EstadoBorrador.ANULADO);
                 pr.setEstado(false);

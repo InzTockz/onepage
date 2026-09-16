@@ -11,6 +11,7 @@ public record PagoVigenteNormalizadoDto (
         LocalDate fechaVencimiento,
         String moneda,            // "USD" / "PEN"
         BigDecimal importe,
-        String estadoOriginal     // null en Scotiabank; el service homologa a "estado"
+        String estadoOriginal,     // null en Scotiabank; el service homologa a "estado"
+        String producto
 ){
 }

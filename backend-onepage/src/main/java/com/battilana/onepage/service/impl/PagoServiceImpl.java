@@ -10,10 +10,7 @@ import com.battilana.onepage.repository.BancoRepository;
 import com.battilana.onepage.repository.PagoRepository;
 import com.battilana.onepage.service.PagoService;
 import com.battilana.onepage.util.HomologacionEstado;
-import com.battilana.onepage.util.parser.BancoParser;
-import com.battilana.onepage.util.parser.BbvaParser;
-import com.battilana.onepage.util.parser.BcpParser;
-import com.battilana.onepage.util.parser.ScotiabankParser;
+import com.battilana.onepage.util.parser.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +31,7 @@ public class PagoServiceImpl implements PagoService {
     private final BbvaParser bbvaParser;
     private final BcpParser bcpParser;
     private final ScotiabankParser scotiabankParser;
+    private final InterbankParser interbankParser;
     private final PagoMapper pagoMapper;
 
     @Override
@@ -51,11 +49,12 @@ public class PagoServiceImpl implements PagoService {
                 .orElseThrow(() -> new RuntimeException("Banco no encontrado: " + codigoBanco));
 
         // 2. Seleccionar el parser según el banco
-        BancoParser parser = seleccionarParser(codigoBanco);
+        BancoParser<PagoNormalizadoDto> parser = seleccionarParser(codigoBanco);
 
         // 3. Leer el Excel con Apache POI
         List<PagoNormalizadoDto> pagosNormalizados;
-        try (Workbook workbook = WorkbookFactory.create(archivo.getInputStream())) {
+//        try (Workbook workbook = WorkbookFactory.create(archivo.getInputStream())) {
+        try (Workbook workbook = WorkbookLoader.cargar(archivo)) {
             if (!parser.coincideFormato(workbook)){
                 String bancoReal = detectarBanco(workbook);
                 String detalle = (bancoReal != null)
@@ -108,11 +107,12 @@ public class PagoServiceImpl implements PagoService {
         log.info("Se registraron {} pagos del banco {}", entities.size(), codigoBanco);
     }
 
-    private BancoParser seleccionarParser(String codigoBanco) {
+    private BancoParser<PagoNormalizadoDto> seleccionarParser(String codigoBanco) {
         return switch (codigoBanco.toUpperCase()) {
             case "BBVA" -> bbvaParser;
             case "BCP" -> bcpParser;
             case "SCOTIA" -> scotiabankParser;
+            case "IBK" -> interbankParser;
             default -> throw new RuntimeException("Parser no implementado para: " + codigoBanco);
         };
     }
@@ -121,6 +121,7 @@ public class PagoServiceImpl implements PagoService {
         if (bbvaParser.coincideFormato(workbook)) return "BBVA";
         if (bcpParser.coincideFormato(workbook)) return "BCP";
         if (scotiabankParser.coincideFormato(workbook)) return "SCOTIA";
+        if (interbankParser.coincideFormato(workbook)) return "IBK";
         return null;
     }
 }
