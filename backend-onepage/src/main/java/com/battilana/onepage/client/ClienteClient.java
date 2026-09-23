@@ -10,18 +10,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "Client-service", url = "${feign.client.base-url}/api/v2/clientes")
+@FeignClient(name = "sap-service", contextId = "cliente")
 public interface ClienteClient {
 
-    @RequestMapping(method = RequestMethod.GET, value = "")
+    @RequestMapping(method = RequestMethod.GET, value = "/api/v2/clientes")
     List<ClienteClientResponse> listarClientes();
 
-    @RequestMapping(method = RequestMethod.GET, value = "/vendedor/{idVendedor}")
+    @RequestMapping(method = RequestMethod.GET, value = "/api/v2/clientes/vendedor/{idVendedor}")
     List<ClienteClientResponse> listarClientePorIdVendedor(@PathVariable Integer idVendedor);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/deudor")
+    @RequestMapping(method = RequestMethod.GET, value = "/api/v2/clientes/deudor")
     List<ClienteDeudorClientResponse> buscarClientesDeudores();
 
-    @RequestMapping(method = RequestMethod.GET, value = "/deudor/vendedor")
+    @RequestMapping(method = RequestMethod.GET, value = "/api/v2/clientes/deudor/vendedor")
     List<ClienteDeudorClientResponse> buscarClientesDeudoresPorVendedor(@RequestParam("idVendedor") Integer idVendedor);
 }

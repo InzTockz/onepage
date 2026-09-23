@@ -17,8 +17,3 @@ spring:
     multipart:
       max-file-size: 20MB
       max-request-size: 25MB
-
-# URL base del servicio externo (en dev = localhost)
-feign:
-  client:
-    base-url: http://localhost:8082

@@ -1,4 +1,7 @@
-#spring.application.name=onepage
 spring:
+  application:
+    name: onepage-service
   profiles:
     active: dev
+server:
+  port: 8080

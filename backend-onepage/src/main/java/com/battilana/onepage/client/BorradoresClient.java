@@ -11,15 +11,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 
-@FeignClient(name = "borrador-service", url = "${feign.client.base-url}/api/v2/borradores")
+//@FeignClient(name = "borrador-service", url = "${feign.client.base-url}/api/v2/borradores")
+@FeignClient(name = "sap-service", contextId = "borrador")
 public interface BorradoresClient {
 
-    @RequestMapping(method = RequestMethod.GET, value = "/id/{docEntryId}")
+    @RequestMapping(method = RequestMethod.GET, value = "/api/v2/borradores/id/{docEntryId}")
     BorradoresClientResponse buscarBorradorPorDocEntry(@PathVariable Integer docEntryId);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/detalle/{docEntry}")
+    @RequestMapping(method = RequestMethod.GET, value = "/api/v2/borradores/detalle/{docEntry}")
     List<DetalleBorradoresResponse> buscarDetalleBorradorPorDocEntry(@PathVariable Integer docEntry);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/pedidos-diario")
+    @RequestMapping(method = RequestMethod.GET, value = "/api/v2/borradores/pedidos-diario")
     List<PedidoDiarioClientResponse> buscarPedidosDiarios();
 }

@@ -9,13 +9,7 @@ services:
       context: ./backend-onepage
       dockerfile: Dockerfile
     container_name: onepage-backend
-    environment:
-      SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: jdbc:mysql://db-battilana:3306/onepage_db
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: "B4tt1l4n4$"
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
-      FEIGN_CLIENT_BASE_URL: http://sap-backend:8082
+    env_file: .env
     ports:
       - "8085:8080"
     networks:

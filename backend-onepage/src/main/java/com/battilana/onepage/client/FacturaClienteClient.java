@@ -11,27 +11,27 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 
-@FeignClient(name = "Factura-cliente-service", url = "${feign.client.base-url}/api/v2/facturas-cliente")
+@FeignClient(name = "sap-service", contextId = "facturaCliente")
 public interface FacturaClienteClient {
 
-    @RequestMapping(method = RequestMethod.GET, value = "/facturas-por-cobrar")
+    @RequestMapping(method = RequestMethod.GET, value = "/api/v2/facturas-cliente//facturas-por-cobrar")
     List<FacturasPorCobrarClientResponse> buscarFacturasPorCobrar();
 
-    @RequestMapping(method = RequestMethod.GET, value = "/facturas-por-cobrar/cliente/{ruc}")
+    @RequestMapping(method = RequestMethod.GET, value = "/api/v2/facturas-cliente/facturas-por-cobrar/cliente/{ruc}")
     List<FacturasPorCobrarClientResponse> buscarFacturasPorCobrarPorCliente(@PathVariable String ruc);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/facturas-por-cobrar/vendedor/{slpCode}")
+    @RequestMapping(method = RequestMethod.GET, value = "/api/v2/facturas-cliente/facturas-por-cobrar/vendedor/{slpCode}")
     List<FacturasPorCobrarClientResponse> buscarFacturasPorCobrarPorVendedor(@PathVariable Integer slpCode);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/facturas-por-cobrar/vendedor/{slpCode}/cliente/{ruc}")
+    @RequestMapping(method = RequestMethod.GET, value = "/api/v2/facturas-cliente/facturas-por-cobrar/vendedor/{slpCode}/cliente/{ruc}")
     List<FacturasPorCobrarClientResponse> buscarFacturasPorVendedorYCliente(@PathVariable Integer slpCode, @PathVariable String ruc);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/facturas-por-cobrar/top-diez")
+    @RequestMapping(method = RequestMethod.GET, value = "/api/v2/facturas-cliente/facturas-por-cobrar/top-diez")
     List<FacturasPorCobrarTopDiezClientResponse> buscarFacturasPorCobrarTopDiez();
 
-    @RequestMapping(method = RequestMethod.GET, value = "/facturas-por-cobrar/vencidos/top-diez")
+    @RequestMapping(method = RequestMethod.GET, value = "/api/v2/facturas-cliente/facturas-por-cobrar/vencidos/top-diez")
     List<FacturasPorCobrarTopDiezMasVencidasClientResponse> facturasPorCobrarTopDiezMasVencidas();
 
-    @RequestMapping(method = RequestMethod.GET, value = "/resumen-cartera")
+    @RequestMapping(method = RequestMethod.GET, value = "/api/v2/facturas-cliente/resumen-cartera")
     List<ResumenCarteraClientResponse> resumentCartera();
 }

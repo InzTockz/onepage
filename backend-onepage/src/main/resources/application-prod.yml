@@ -1,4 +1,3 @@
-#spring.application.name=onepage
 spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL}
@@ -17,8 +16,3 @@ spring:
     multipart:
       max-file-size: 20MB
       max-request-size: 25MB
-
-# URL base del servicio externo (en Docker = nombre del contenedor)
-feign:
-  client:
-    base-url: ${FEIGN_CLIENT_BASE_URL}

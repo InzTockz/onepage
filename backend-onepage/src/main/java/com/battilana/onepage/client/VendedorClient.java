@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 
-@FeignClient(name = "Vendedor-service", url = "${feign.client.base-url}/api/v2/vendedores")
+@FeignClient(name = "sap-service", contextId = "vendedor")
 public interface VendedorClient {
 
-    @RequestMapping(method = RequestMethod.GET, value = "")
+    @RequestMapping(method = RequestMethod.GET, value = "/api/v2/vendedores")
     List<VendedorResponse> listaVendedores();
 }
