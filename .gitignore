@@ -1,0 +1,2 @@
+#Evitamos que se suba el .env a nuestro repositorio
+.env
