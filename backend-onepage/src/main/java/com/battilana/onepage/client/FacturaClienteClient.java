@@ -14,7 +14,7 @@ import java.util.List;
 @FeignClient(name = "sap-service", contextId = "facturaCliente")
 public interface FacturaClienteClient {
 
-    @RequestMapping(method = RequestMethod.GET, value = "/api/v2/facturas-cliente//facturas-por-cobrar")
+    @RequestMapping(method = RequestMethod.GET, value = "/api/v2/facturas-cliente/facturas-por-cobrar")
     List<FacturasPorCobrarClientResponse> buscarFacturasPorCobrar();
 
     @RequestMapping(method = RequestMethod.GET, value = "/api/v2/facturas-cliente/facturas-por-cobrar/cliente/{ruc}")
