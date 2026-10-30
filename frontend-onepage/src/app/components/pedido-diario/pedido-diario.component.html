@@ -70,23 +70,54 @@
       </button>
     </div>
   }
+  <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 px-4 py-2">
+    <p class="text-xs text-slate-500" id="ayuda-columnas-pedidos">
+      Arrastra el borde de los encabezados para ajustar las columnas.
+    </p>
+    <button
+      type="button"
+      (click)="restablecerColumnas()"
+      class="px-3 py-1.5 text-xs font-medium border border-slate-200 rounded-lg bg-white text-slate-600 hover:bg-slate-50 cursor-pointer"
+    >
+      Restablecer columnas
+    </button>
+  </div>
   <!-- Área scrollable de la tabla -->
   <div
     #tableContainer
-    class="cursor-grab active:cursor-grabbing select-none overflow-x-hidden overflow-y-auto max-h-[520px] xl:max-h-[610px]"
+    role="region"
+    aria-label="Pedidos diarios"
+    aria-describedby="ayuda-columnas-pedidos"
+    tabindex="0"
+    class="tabla-contenedor select-none overflow-auto max-h-[520px] xl:max-h-[610px]"
+    [class.arrastrando]="arrastrandoTabla"
+    (pointerdown)="iniciarDesplazamiento($event)"
+    (pointermove)="desplazarTabla($event)"
+    (pointerup)="finalizarDesplazamiento($event)"
+    (pointercancel)="finalizarDesplazamiento($event)"
+    (lostpointercapture)="finalizarDesplazamiento($event)"
+    (pointerleave)="salirDelContenedor($event)"
   >
     <table
-      class="min-w-full table-fixed border-collapse text-xs xl:text-[12.5px] text-left text-slate-600"
+      [style.width.px]="anchoTabla"
+      class="tabla-pedidos table-fixed border-collapse text-xs xl:text-[12.5px] text-left text-slate-600"
     >
+      <colgroup>
+        <col [style.width.px]="anchoSeleccion" />
+        @for (columna of columnas; track columna.id) {
+          <col [style.width.px]="columna.ancho" />
+        }
+      </colgroup>
       <!-- Header fijo -->
       <thead class="sticky top-0 z-20">
         <tr
           class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] tracking-wider font-semibold"
         >
-          <th class="px-3 py-3 w-10 sticky left-0 bg-slate-100 z-30">
+          <th scope="col" class="px-3 py-3 columna-fija left-0 bg-slate-100 z-30">
             <label class="flex items-center justify-center cursor-pointer w-full">
               <input
                 type="checkbox"
+                aria-label="Seleccionar todos los pedidos de esta página"
                 [checked]="todosSeleccionados"
                 [indeterminate]="algunosSeleccionados"
                 (change)="toggleTodos()"
@@ -94,31 +125,30 @@
               />
             </label>
           </th>
-          <th
-            class="w-[120px] min-w-[120px] max-w-[120px] px-3 py-3 sticky left-10 bg-slate-100 text-slate-700 z-30"
-          >
-            Ruc
-          </th>
-          <th
-            class="w-[250px] min-w-[250px] px-3 py-3 sticky left-[calc(2.5rem+120px)] bg-slate-100 text-slate-700 z-30"
-          >
-            Nombre
-          </th>
-          <th class="px-3 xl:px-4 py-3">C. Pago</th>
-          <th class="px-3 xl:px-4 py-3 text-right">Total Pedido</th>
-          <th class="px-3 xl:px-4 py-3 text-right">L. Crédito</th>
-          <th class="px-3 xl:px-4 py-3">Últ. Pago</th>
-          <th class="px-3 xl:px-4 py-3 text-right text-red-500">Vencido</th>
-          <th class="px-3 xl:px-4 py-3 text-right">Deuda</th>
-          <th class="px-3 xl:px-4 py-3 text-right">Utilizacion de LC</th>
-          <th class="px-3 xl:px-4 py-3 text-right">Mora</th>
-          <th class="px-3 xl:px-4 py-3 text-right">F. Vencidas</th>
-          <th class="px-3 xl:px-4 py-3 text-right">Por Vencer</th>
-          <th class="px-3 xl:px-4 py-3">Más Vencida</th>
-          <th class="px-3 xl:px-4 py-3">Hora Ingreso</th>
-          <th class="px-3 xl:px-4 py-3">Fecha Ingreso</th>
-          <th class="px-3 xl:px-4 py-3">Estado</th>
-          <th class="px-3 xl:px-4 py-3">Comentario</th>
+          @for (columna of columnas; track columna.id) {
+            <th
+              scope="col"
+              class="px-3 xl:px-4 py-3"
+              [class.columna-fija]="columna.fija"
+              [class.bg-slate-100]="columna.fija"
+              [class.text-slate-700]="columna.fija"
+              [class.z-30]="columna.fija"
+              [class.text-right]="columna.derecha"
+              [class.text-red-500]="columna.id === 'montoVencido'"
+              [style.left.px]="columna.id === 'codCliente' ? anchoSeleccion : columna.id === 'nombre' ? posicionNombre : null"
+            >
+              <span class="block truncate" [title]="columna.titulo">{{ columna.titulo }}</span>
+              <span
+                appColumnResize
+                [width]="columna.ancho"
+                [minWidth]="columna.minimo"
+                [maxWidth]="columna.maximo"
+                [columnLabel]="columna.titulo"
+                (widthChange)="cambiarAnchoColumna(columna, $event)"
+                (resizeEnd)="guardarAnchosColumnas()"
+              ></span>
+            </th>
+          }
         </tr>
       </thead>
 
@@ -126,12 +156,13 @@
         @for (pd of paginatedData(); track $index) {
           <tr class="even:bg-slate-50/50 hover:bg-indigo-50/60 transition-colors">
             <td
-              class="px-3 py-2.5 w-10 sticky left-0 bg-white z-10"
+              class="px-3 py-2.5 columna-fija left-0 bg-white z-10"
               (click)="$event.stopPropagation()"
             >
               <label class="flex items-center justify-center cursor-pointer">
                 <input
                   type="checkbox"
+                  [attr.aria-label]="'Seleccionar pedido de ' + pd.nombre"
                   [checked]="seleccionados.has(pd.idLotePedidos)"
                   (change)="toggleUno(pd.idLotePedidos)"
                   class="w-4 h-3.5 rounded border-slate-300 text-indigo-600 focus:ring-0 focus:ring-offset-0"
@@ -139,12 +170,15 @@
               </label>
             </td>
             <td
-              class="w-[120px] min-w-[120px] max-w-[120px] px-3 font-medium text-slate-800 whitespace-nowrap sticky left-10 bg-white z-10 select-text"
+              [style.left.px]="anchoSeleccion"
+              class="px-3 font-medium text-slate-800 whitespace-nowrap columna-fija bg-white z-10 select-text"
             >
               {{ pd.codCliente }}
             </td>
             <td
-              class="w-[250px] min-w-[250px] px-3 text-slate-800 whitespace-nowrap truncate sticky left-[calc(2.5rem+120px)] bg-white z-10 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.06)]"
+              [style.left.px]="posicionNombre"
+              [title]="pd.nombre"
+              class="px-3 text-slate-800 whitespace-nowrap truncate columna-fija bg-white z-10 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.06)]"
             >
               {{ pd.nombre }}
             </td>
@@ -236,8 +270,9 @@
             </td>
             <td class="px-3 xl:px-4 whitespace-nowrap tabular-nums">
               <input
-                class="min-w-[200px] w-full p-1.5 px-3 text-xs bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder:text-gray-400 outline-none hover:border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:bg-white transition-all"
+                class="min-w-0 w-full p-1.5 px-3 text-xs bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder:text-gray-400 outline-none hover:border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:bg-white transition-all"
                 type="text"
+                [attr.aria-label]="'Comentario del pedido de ' + pd.nombre"
                 [(ngModel)]="pd.comentario"
                 (keydown.enter)="guardarComentario(pd)"
                 name="comentario"

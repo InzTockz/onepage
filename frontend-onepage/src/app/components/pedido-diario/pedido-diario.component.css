@@ -1,0 +1,65 @@
+.tabla-contenedor {
+  cursor: grab;
+  overscroll-behavior-x: contain;
+}
+
+.tabla-contenedor.arrastrando {
+  cursor: grabbing;
+}
+
+.tabla-pedidos th {
+  position: relative;
+  padding-right: 1rem;
+}
+
+.tabla-pedidos td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tabla-pedidos .columna-fija {
+  position: sticky;
+}
+
+.column-resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 10px;
+  cursor: col-resize;
+  touch-action: none;
+  user-select: none;
+}
+
+.column-resize-handle::after {
+  content: '';
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  left: 4px;
+  width: 2px;
+  border-radius: 1px;
+  background: #cbd5e1;
+}
+
+.column-resize-handle:hover::after,
+.column-resize-handle.is-resizing::after,
+.column-resize-handle:focus-visible::after {
+  top: 10%;
+  bottom: 10%;
+  background: #4f46e5;
+}
+
+.column-resize-handle:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: -2px;
+}
+
+/* En pantallas pequeñas, las columnas fijadas no deben tapar el resto de la tabla. */
+@media (max-width: 767px) {
+  .tabla-pedidos .columna-fija {
+    position: relative;
+    left: auto !important;
+  }
+}
