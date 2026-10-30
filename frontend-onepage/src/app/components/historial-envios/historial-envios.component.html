@@ -297,7 +297,7 @@
 
     <!-- Paginación -->
     @if (totalPaginas > 1) {
-      <div class="flex items-center justify-between mt-5 px-2">
+      <div class="flex flex-wrap items-center justify-between gap-3 mt-5 px-2">
         <p class="text-xs text-gray-500">
           Mostrando
           <span class="font-semibold text-gray-700">{{ rangoMostrado.desde }}</span>
@@ -307,14 +307,37 @@
           <span class="font-semibold text-gray-700">{{ historialFiltrado.length }}</span>
         </p>
 
-        <div class="flex items-center gap-1">
-          <!-- Botón anterior -->
+        <nav aria-label="Paginación del historial de envíos" class="flex flex-wrap items-center gap-1">
+          <!-- Botón primera página -->
           <button
-            (click)="cambiarPagina(paginaActual() - 1)"
+            type="button"
+            (click)="cambiarPagina(1)"
             [disabled]="paginaActual() === 1"
-            class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            aria-label="Primera página"
+            class="w-8 h-8 shrink-0 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
           >
             <svg
+              aria-hidden="true"
+              class="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M18 18l-6-6 6-6M6 6v12" />
+            </svg>
+          </button>
+
+          <!-- Botón anterior -->
+          <button
+            type="button"
+            (click)="cambiarPagina(paginaActual() - 1)"
+            [disabled]="paginaActual() === 1"
+            aria-label="Página anterior"
+            class="w-8 h-8 shrink-0 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          >
+            <svg
+              aria-hidden="true"
               class="w-4 h-4"
               viewBox="0 0 24 24"
               fill="none"
@@ -327,26 +350,36 @@
 
           <!-- Números de página -->
           @for (p of paginasArray; track $index) {
-            <button
-              (click)="cambiarPagina(p)"
-              class="w-8 h-8 flex items-center justify-center rounded-lg text-xs font-semibold transition-all"
-              [class]="
-                paginaActual() === p
-                  ? 'bg-blue-900 text-white'
-                  : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
-              "
-            >
-              {{ p }}
-            </button>
+            @if (p === '…') {
+              <span class="px-1 text-xs text-gray-400" aria-hidden="true">…</span>
+            } @else {
+              <button
+                type="button"
+                (click)="cambiarPagina(p)"
+                [attr.aria-label]="'Ir a la página ' + p"
+                [attr.aria-current]="paginaActual() === p ? 'page' : null"
+                class="min-w-8 h-8 px-2 shrink-0 flex items-center justify-center rounded-lg text-xs font-semibold transition-all"
+                [class]="
+                  paginaActual() === p
+                    ? 'bg-blue-900 text-white'
+                    : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+                "
+              >
+                {{ p }}
+              </button>
+            }
           }
 
           <!-- Botón siguiente -->
           <button
+            type="button"
             (click)="cambiarPagina(paginaActual() + 1)"
             [disabled]="paginaActual() === totalPaginas"
-            class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            aria-label="Página siguiente"
+            class="w-8 h-8 shrink-0 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
           >
             <svg
+              aria-hidden="true"
               class="w-4 h-4"
               viewBox="0 0 24 24"
               fill="none"
@@ -356,7 +389,27 @@
               <path d="M9 18l6-6-6-6" />
             </svg>
           </button>
-        </div>
+
+          <!-- Botón última página -->
+          <button
+            type="button"
+            (click)="cambiarPagina(totalPaginas)"
+            [disabled]="paginaActual() === totalPaginas"
+            aria-label="Última página"
+            class="w-8 h-8 shrink-0 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          >
+            <svg
+              aria-hidden="true"
+              class="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M6 18l6-6-6-6M18 6v12" />
+            </svg>
+          </button>
+        </nav>
       </div>
     }
   }

@@ -19,6 +19,7 @@ export class HistorialEnviosComponent implements OnInit {
   // Paginación
   paginaActual = signal(1);
   itemsPorPagina = 10;
+  readonly limiteElementosPaginacion = 9;
 
   constructor(private borradoresService: BorradoresService) { }
 
@@ -89,7 +90,32 @@ export class HistorialEnviosComponent implements OnInit {
     return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
   }
 
-  get paginasArray(): number[] {
-    return Array.from({ length: this.totalPaginas }, (_, i) => i + 1);
+  get paginasArray(): (number | '…')[] {
+    const total = this.totalPaginas;
+    if (total <= this.limiteElementosPaginacion) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+
+    // Reservar dos páginas en cada extremo y espacio para ambas elipsis.
+    const paginasExtremos = 2;
+    const tamanioVentana = this.limiteElementosPaginacion - paginasExtremos * 2 - 2;
+    let inicio = Math.max(paginasExtremos + 1, this.paginaActual() - Math.floor(tamanioVentana / 2));
+    let fin = Math.min(total - paginasExtremos, inicio + tamanioVentana - 1);
+
+    // Cerca de los extremos, aprovechar el espacio de la elipsis que desaparece.
+    if (inicio <= paginasExtremos + 2) {
+      inicio = paginasExtremos + 1;
+      fin = this.limiteElementosPaginacion - paginasExtremos - 1;
+    } else if (fin >= total - paginasExtremos - 1) {
+      inicio = total - (this.limiteElementosPaginacion - paginasExtremos - 2);
+      fin = total - paginasExtremos;
+    }
+
+    const paginas: (number | '…')[] = [1, 2];
+    if (inicio > paginasExtremos + 1) paginas.push('…');
+    for (let pagina = inicio; pagina <= fin; pagina++) paginas.push(pagina);
+    if (fin < total - paginasExtremos) paginas.push('…');
+    paginas.push(total - 1, total);
+    return paginas;
   }
 }
