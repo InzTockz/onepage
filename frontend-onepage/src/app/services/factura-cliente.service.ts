@@ -3,13 +3,14 @@ import { Injectable } from '@angular/core';
 import { FacturasPorCobrar } from '../models/factura-cliente/facturas-por-cobrar.model';
 import { FacturasPorCobrarTopDiez } from '../models/factura-cliente/facturas-por-cobrar-top-diez.model';
 import { ResumenCarteraSap } from '../models/factura-cliente/resumen-cartera-sap.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FacturaClienteService {
-  // private facturaClienteApi = 'http://192.168.1.139:8080/api/v1/facturas-cliente';
-  private facturaClienteApi = "/api/v1/facturas-cliente";
+
+  private facturaClienteApi = `${environment.apiUrl}/facturas-cliente`;
 
   constructor(private http: HttpClient) { }
 

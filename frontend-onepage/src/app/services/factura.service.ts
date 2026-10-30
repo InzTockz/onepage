@@ -2,14 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Factura } from '../models/factura-cliente/factura.model';
 import { ResumenCartera } from '../models/factura-cliente/resumen-cartera.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FacturaService {
 
-  // private apiFactura: string = "http://192.168.1.139:8080/api/v1/factura";
-  private apiFactura: string = "/api/v1/factura";
+  private apiFactura: string = `${environment.apiUrl}/factura`;
 
   constructor(private http: HttpClient) { }
 

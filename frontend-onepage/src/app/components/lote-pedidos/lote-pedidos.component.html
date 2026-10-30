@@ -171,8 +171,10 @@
                     />
                     <path d="M12 9v4M12 17h.01" />
                   </svg>
-                  <span class="text-[10px] font-bold uppercase tracking-wide text-red-600"
-                    >Facturas vencidas</span
+                  <span
+                    [ngClass]="pd.comentario.length != 0 ? '' : 'text-red-600'"
+                    class="text-[10px] font-bold uppercase tracking-wide"
+                    >{{ pd.comentario.length != 0 ? pd.comentario : 'Facturas vencidas' }}</span
                   >
                   <span
                     class="ml-auto text-[10px] font-bold text-red-600 bg-red-100 rounded-full px-1.5 py-0.5 tabular-nums"
@@ -202,7 +204,7 @@
                 <span
                   [ngClass]="[
                     pd.comentario.length > 0
-                      ? 'text-[15px] font-semibold text-gray-700'
+                      ? 'text-[10px] font-bold uppercase tracking-wide'
                       : 'text-[11px] font-semibold text-green-700',
                   ]"
                   class=""

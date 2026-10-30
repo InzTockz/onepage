@@ -1,16 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { PedidosDiarios } from '../models/pedidos-diarios.model';
 import { LotePedido } from '../models/borrador/lote-pedido.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BorradoresService {
 
-  // private apiBorrador: string = "http://192.168.1.139:8080/api/v1/borradores";
-  private apiBorrador: string = "/api/v1/borradores"
+  private apiBorrador: string = `${environment.apiUrl}/borradores`
 
   constructor(private http: HttpClient) { };
 

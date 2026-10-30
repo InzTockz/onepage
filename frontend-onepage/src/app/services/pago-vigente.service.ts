@@ -2,14 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PagosVigenteResponse } from '../models/pagos/pagos-vigente-response.model';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PagoVigenteService {
 
-  // private apiPagoVigente: string = "http://192.168.1.139:8080/api/v1/pagos-vigentes";
-  private apiPagoVigente: string = "/api/v1/pagos-vigentes";
+  private apiPagoVigente: string = `${environment.apiUrl}/pagos-vigentes`;
 
   constructor(private http: HttpClient) { }
 

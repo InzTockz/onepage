@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PagosResponse } from '../models/pagos/pagos-response.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PagosService {
-  // private apiPago = 'http://192.168.1.139:8080/api/v1/bancos';
-  private apiPago = '/api/v1/bancos';
+
+  private apiPago = `${environment.apiUrl}/bancos`;
 
   constructor(private http: HttpClient) { }
 
